@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 /*	only_digits check whether str is made up of only digits 
 	- returns 0 if any char is non-digit

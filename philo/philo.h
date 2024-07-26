@@ -19,6 +19,7 @@
 # include <stdio.h>
 # include <sys/time.h>
 # include <unistd.h>
+# include <limits.h>
 
 # define RESET       "\x1b[0m"
 # define RED         "\x1b[31m"
@@ -109,14 +110,12 @@ int				check_any_dead(t_meta *meta);
 int				check_all_full(t_meta *meta);
 void			*monitor(void *arg);
 
-
 /* Functions for philosophers: philos_cycle.c */
 void			unlock_forks(int i, t_philo *philo);
 int				eating(t_philo *philo);
 int				sleeping(t_philo *philo);
 int				thinking(t_philo *philo);
 void			*routine(void *arg);
-
 
 /* Starting and stopping cycle: cycle.c */
 int				start(t_meta *meta);
@@ -125,7 +124,7 @@ int				stop(t_meta *meta);
 /* Functions for single philosopher: single_philo.c */
 void			*single_philo(t_philo *philo);
 
-/* utils.c */
+/* Utility functions: utils.c */
 int				quick_check_dead(t_philo *philo);
 int				print_status(char *str, t_philo *philo);
 int				usleep_check(t_philo *philo, time_t ms);

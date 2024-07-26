@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_bonus.h                                      :+:      :+:    :+:   */
+/*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:37:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/04/20 07:43:13 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/24 11:55:24 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,33 @@
 # include <stdio.h>
 # include <sys/time.h>
 # include <unistd.h>
+# include <limits.h>
 
+# define RESET       "\x1b[0m"
+# define RED         "\x1b[31m"
+# define GREEN       "\x1b[32m"
+# define YELLOW      "\x1b[33m"
+# define BLUE        "\x1b[34m"
+# define MAGENTA     "\x1b[35m"
+# define CYAN        "\x1b[36m"
+# define WHITE       "\x1b[37m"
+
+/****************************************************************************/
+/* Error Messages 															*/
+/****************************************************************************/
+# define ERR_ARGS "Wrong number of arguments"
+# define ERR_INVALID "Invalid input"
+# define ERR_MALLOC_META "Malloc error for meta"
+# define ERR_MALLOC_FORKS "Malloc error for forks"
+# define ERR_MALLOC_PHILOS "Malloc error for philos"
+# define ERR_MALLOC_PHILO_I "Malloc error for philo[i]"
+# define ERR_THREAD_CREATE "Error creating threads"
+# define ERR_THREAD_JOIN "Error joining threads"
+# define ERR_MUTEX_INIT "Error initialising mutex"
+
+/****************************************************************************/
+/* Structures																*/
+/****************************************************************************/
 typedef struct s_philo	t_philo;
 
 typedef struct s_meta
@@ -57,57 +83,51 @@ typedef struct s_philo
 	t_meta			*meta;
 }	t_philo;
 
-/* Error Messages */
-# define ERR_ARGS "Wrong number of arguments"
-# define ERR_INVALID "Invalid input"
-# define ERR_MALLOC_META "Malloc error for meta"
-# define ERR_MALLOC_FORKS "Malloc error for forks"
-# define ERR_MALLOC_PHILOS "Malloc error for philos"
-# define ERR_THREAD_CREATE "Error creating threads"
-# define ERR_THREAD_JOIN "Error joining threads"
-# define ERR_MUTEX_INIT "Error initialising mutex"
-
-/* utils.c */
-int				print_status(char *str, t_philo *philo);
-int				usleep_check(t_philo *philo, time_t ms);
-time_t			time_now_ms(void);
-
-/*	exit.c*/
-void			destroy_all(t_meta *meta, char *str, int num_mutexes);
-void			destroy_forks(t_meta *meta, int n, char *str);
-void			exit_error(char *msg, t_meta *meta);
-void			safe_free(void *memory);
-
-/* parse.c */
+/****************************************************************************/
+/* Function Declarations													*/
+/****************************************************************************/
+/* Checking of input: check_bonus.c */
 int				only_digits(char *str);
 int				ft_atoi(const char *str);
 int				check_arg(int argc, char **argv);
 
-/* init.c */
+/* Initialise simulation: init.c */
+int				init_forks(t_meta *meta);
 t_philo			*init_philo(t_meta *meta, int i);
 int				init_philos(t_meta *meta);
 int				init_oth_mutex(t_meta *meta);
 t_meta			*init_meta(int argc, char **argv);
 
-/* forks.c */
-int				init_forks(t_meta *meta);
+/*	Clear resources: free and destroy: exit.c*/
+void			destroy_all(t_meta *meta, char *str, int num_mutexes);
+void			destroy_philos(t_meta *meta, int nth_philo, char *str);
+void			destroy_forks(t_meta *meta, int nth_fork, char *str);
+void			exit_error(char *msg, t_meta *meta);
+void			safe_free(void *memory);
 
-/* actions.c */
+/* Functions for monitor thread: monitor.c */
+int				check_any_dead(t_meta *meta);
+int				check_all_full(t_meta *meta);
+void			*monitor(void *arg);
+
+/* Functions for philosophers: philos_cycle.c */
+void			unlock_forks(int i, t_philo *philo);
 int				eating(t_philo *philo);
 int				sleeping(t_philo *philo);
 int				thinking(t_philo *philo);
-
-/* simulation.c */
-void			*single_philo(t_philo *philo);
 void			*routine(void *arg);
+
+/* Starting and stopping cycle: cycle.c */
 int				start(t_meta *meta);
 int				stop(t_meta *meta);
 
-/* monitor.c */
-int				quick_check_dead(t_philo *philo);
-// int				check_dead(t_philo *philo);
-void			*monitor(void *arg);
+/* Functions for single philosopher: single_philo.c */
+void			*single_philo(t_philo *philo);
 
-/* main.c */
+/* Utility functions: utils.c */
+int				quick_check_dead(t_philo *philo);
+int				print_status(char *str, t_philo *philo);
+int				usleep_check(t_philo *philo, time_t ms);
+time_t			time_now_ms(void);
 
 #endif
