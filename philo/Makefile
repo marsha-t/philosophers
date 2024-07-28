@@ -1,5 +1,5 @@
 NAME = philo
-CFILES = main.c check.c init.c exit.c monitor.c philos_cycle.c cycle.c single_philo.c utils.c 
+CFILES = main.c check.c init.c exit.c monitor.c philos.c cycle.c single_philo.c utils.c 
 OFILES = ${CFILES:.c=.o}
 CFLAGS = -Wall -Wextra -Werror -pthread 
 

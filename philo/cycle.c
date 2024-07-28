@@ -28,13 +28,13 @@ int	start(t_meta *meta)
 		i++;
 	}
 	if (pthread_create(&meta->check_end, NULL, &monitor, meta) != 0)
-		return (destroy_all(meta, ERR_THREAD_CREATE, 4), 1);
+		return (destroy_mutexes(meta, 4, ERR_THREAD_CREATE), 1);
 	i = 0;
 	while (i < meta->num_philos)
 	{
 		if (pthread_create(&meta->philos[i]->thread, NULL, \
 			&routine, meta->philos[i]) != 0)
-			return (destroy_all(meta, ERR_THREAD_CREATE, 4), 1);
+			return (destroy_threads(meta, i, ERR_THREAD_CREATE), 1);
 		i++;
 	}
 	return (0);
@@ -48,14 +48,12 @@ int	stop(t_meta *meta)
 	int	i;
 
 	i = 0;
-	if (pthread_join(meta->check_end, NULL) != 0)
-		return (destroy_all(meta, ERR_THREAD_JOIN, 4), 1);
+	pthread_join(meta->check_end, NULL);
 	while (i < meta->num_philos)
 	{
-		if (pthread_join(meta->philos[i]->thread, NULL) != 0)
-			return (destroy_all(meta, ERR_THREAD_JOIN, 4), 1);
+		pthread_join(meta->philos[i]->thread, NULL);
 		i++;
 	}
-	destroy_all(meta, NULL, 4);
+	destroy_mutexes(meta, 4, NULL);
 	return (0);
 }

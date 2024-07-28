@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-/*	init_forks allocates space for forks and initialises them 
+/*	init_forks allocates space for forks and initialises them
 	- returns 1 if error w/ malloc or mutex init */
 int	init_forks(t_meta *meta)
 {
@@ -58,7 +58,7 @@ t_philo	*init_philo(t_meta *meta, int i)
 }
 
 /*	init_philos allocates space for pointers for all philosophers and
-	- initialises each using another function - init_philo 
+	- initialises each using another function - init_philo
 	- returns 1 if error w/ malloc */
 int	init_philos(t_meta *meta)
 {
@@ -88,11 +88,11 @@ int	init_oth_mutex(t_meta *meta)
 	if (pthread_mutex_init(&meta->print_mutex, NULL) != 0)
 		return (destroy_philos(meta, meta->num_philos, ERR_MUTEX_INIT), 1);
 	if (pthread_mutex_init(&meta->end_mutex, NULL) != 0)
-		return (destroy_all(meta, ERR_MUTEX_INIT, 1), 1);
+		return (destroy_mutexes(meta, 1, ERR_MUTEX_INIT), 1);
 	if (pthread_mutex_init(&meta->last_meal_mutex, NULL) != 0)
-		return (destroy_all(meta, ERR_MUTEX_INIT, 2), 1);
+		return (destroy_mutexes(meta, 2, ERR_MUTEX_INIT), 1);
 	if (pthread_mutex_init(&meta->num_meals_mutex, NULL) != 0)
-		return (destroy_all(meta, ERR_MUTEX_INIT, 3), 1);
+		return (destroy_mutexes(meta, 3, ERR_MUTEX_INIT), 1);
 	i = 0;
 	while (i < meta->num_philos)
 	{
