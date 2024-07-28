@@ -12,30 +12,53 @@
 
 #include "philo_bonus.h"
 
-/*	init_forks allocates space for forks and initialises them 
+/*	sem_unlink_all removes all semaphores 
+	(in case they already exist) 
+	- sem_unlink can return -1 and set errno if sempahore doesn't exist
+		so reset errno at end of function
+	*/
+void	sem_unlink_all(void)
+{
+	sem_unlink("/forks");
+	sem_unlink("/print");
+	sem_unlink("/end");
+	sem_unlink("/last_meal");
+	sem_unlink("/num_meals");
+	errno = 0;
+}
+
+/*	init_sem opens all semaphores:
+	- semaphores: forks, print, end, last_meal, num_meals
+	- removes semaphores if they'd previously existed 
 	- returns 1 if error w/ malloc or mutex init */
-int	init_forks(t_meta *meta)
+int	init_sem(t_meta *meta)
 {
 	int	i;
 
-	meta->forks = malloc(sizeof(pthread_mutex_t) * meta->num_philos);
-	if (!meta->forks)
-		return (exit_error(ERR_MALLOC_FORKS, meta), 1);
-	i = 0;
-	while (i < meta->num_philos)
-	{
-		if (pthread_mutex_init(&meta->forks[i], NULL) != 0)
-			return (destroy_forks(meta, i, ERR_MUTEX_INIT), 1);
-		i++;
-	}
+	sem_unlink_all()
+	meta->forks = sem_open("/forks", O_CREAT, 0644, meta->num_philos);
+	if (meta->forks == SEM_FAILED)
+		return (exit_error(ERR_SEM_OPEN, meta), 1);
+	meta->print_sem = sem_open("/print", O_CREAT, 0644, 1);
+	if (meta->print_sem == SEM_FAILED)
+		return (destroy_sem(meta, 1, ERR_SEM_OPEN), 1);
+	meta->end_sem = sem_open("/end", O_CREAT, 0644, 1);
+	if (meta->end_sem == SEM_FAILED)
+		return (destroy_sem(meta, 2, ERR_SEM_OPEN), 1);
+	meta->last_meal_sem = sem_open("/last_meal", O_CREAT, 0644, 1);
+	if (meta->last_meal_sem == SEM_FAILED)
+		return (destroy_sem(meta, 3, ERR_SEM_OPEN), 1);
+	meta->num_meals_sem = sem_open("/num_meals", O_CREAT, 0644, 1);
+	if (meta->num_meals_sem == SEM_FAILED)
+		return (destroy_sem(meta, 4, ERR_SEM_OPEN), 1);
 	return (0);
 }
 
 /*	init_philo allocates space for each philo and
 	- initialises *SOME* starting values
-	- assigns forks
+	- assigns semaphores
 	- link back to meta
-	It does NOT create threads nor initialise start time  */
+	It does NOT create processes nor initialise start time  */
 t_philo	*init_philo(t_meta *meta, int i)
 {
 	t_philo	*philo;
@@ -47,18 +70,17 @@ t_philo	*init_philo(t_meta *meta, int i)
 	philo->num_meals = 0;
 	philo->eating = 0;
 	philo->end_cycle = &meta->end_cycle;
-	philo->fork_l = &meta->forks[i];
-	philo->fork_r = &meta->forks[0];
-	if (i != meta->num_philos - 1)
-	{
-		philo->fork_r = &meta->forks[i + 1];
-	}
+	philo->forks = meta->forks;
+	philo->print_sem = meta->print_sem;
+	philo->end_sem = meta->end_sem;
+	philo->last_meal_sem = meta->last_meal_sem;
+	philo->num_meals_sem = meta->num_meals_sem;
 	philo->meta = meta;
 	return (philo);
 }
 
 /*	init_philos allocates space for pointers for all philosophers and
-	- initialises each using another function - init_philo 
+	- initialises each pointer with philo struct using init_philo 
 	- returns 1 if error w/ malloc */
 int	init_philos(t_meta *meta)
 {
@@ -66,7 +88,7 @@ int	init_philos(t_meta *meta)
 
 	meta->philos = malloc(sizeof(t_philo *) * meta->num_philos);
 	if (!meta->philos)
-		return (destroy_forks(meta, meta->num_philos, ERR_MALLOC_PHILOS), 1);
+		return (destroy_sem(meta, 4, ERR_MALLOC_PHILOS), 1);
 	i = 0;
 	while (i < meta->num_philos)
 	{
@@ -78,37 +100,10 @@ int	init_philos(t_meta *meta)
 	return (0);
 }
 
-/*	init_oth initialises mutexes and assigns its address in each philo struct
-	- mutexes: print_mutex, end_mutex, last_meal_mutex, num_meals_mutex
-	- returns 1 if error w/ mutex init */
-int	init_oth_mutex(t_meta *meta)
-{
-	int	i;
-
-	if (pthread_mutex_init(&meta->print_mutex, NULL) != 0)
-		return (destroy_philos(meta, meta->num_philos, ERR_MUTEX_INIT), 1);
-	if (pthread_mutex_init(&meta->end_mutex, NULL) != 0)
-		return (destroy_all(meta, ERR_MUTEX_INIT, 1), 1);
-	if (pthread_mutex_init(&meta->last_meal_mutex, NULL) != 0)
-		return (destroy_all(meta, ERR_MUTEX_INIT, 2), 1);
-	if (pthread_mutex_init(&meta->num_meals_mutex, NULL) != 0)
-		return (destroy_all(meta, ERR_MUTEX_INIT, 3), 1);
-	i = 0;
-	while (i < meta->num_philos)
-	{
-		meta->philos[i]->print_mutex = &meta->print_mutex;
-		meta->philos[i]->end_mutex = &meta->end_mutex;
-		meta->philos[i]->last_meal_mutex = &meta->last_meal_mutex;
-		meta->philos[i]->num_meals_mutex = &meta->num_meals_mutex;
-		i++;
-	}
-	return (0);
-}
-
 /*	init_meta initialises the meta structure with:
 	- provided arguments
-	- array of forks
-	- array of philosophers*/
+	- semaphores
+	- array of philosophers structures*/
 t_meta	*init_meta(int argc, char **argv)
 {
 	t_meta	*meta;
@@ -126,11 +121,9 @@ t_meta	*init_meta(int argc, char **argv)
 	meta->philos = 0;
 	if (6 == argc)
 		meta->min_meals = ft_atoi(argv[5]);
-	if (1 == init_forks(meta))
+	if (init_sem(meta))
 		return (0);
 	if (1 == init_philos(meta))
-		return (0);
-	if (1 == init_oth_mutex(meta))
 		return (0);
 	return (meta);
 }

@@ -1,7 +1,5 @@
 NAME = philo_bonus
-CFILES = main.c parse.c 
-# init.c 
-# forks.c utils.c actions.c exit.c cycle.c monitor.c
+CFILES = main_bonus.c check_bonus.c init_bonus.c exit_bonus.c
 OFILES = ${CFILES:.c=.o}
 CFLAGS = -Wall -Wextra -Werror -pthread
 
