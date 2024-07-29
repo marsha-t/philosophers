@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 06:14:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 11:20:10 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/29 13:11:42 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ int	start(t_meta *meta)
 	pid_t	pid;
 
 	meta->start_time = time_now_ms();
+	dprintf(2, "start time: %ld\n", meta->start_time);
+
 	i = 0;
 	while (i < meta->num_philos)
 	{
@@ -56,6 +58,7 @@ int	stop(t_meta *meta)
 	int	i;
 
 	i = 0;
+	pthread_join(meta->check_end, NULL);
 	while (i < meta->num_philos)
 	{
 		waitpid(meta->philo_pids[i], NULL, 0);

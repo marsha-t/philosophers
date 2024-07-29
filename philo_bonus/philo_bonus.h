@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:37:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 11:27:20 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/29 12:25:14 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <errno.h>
 # include <fcntl.h>
 # include <sys/stat.h>
+# include <stdarg.h>
 
 # define RESET "\x1b[0m"
 # define RED "\x1b[31m"
@@ -70,8 +71,6 @@ typedef struct s_meta
 	sem_t				*print_sem;
 	sem_t				*end_sem;
 	sem_t				*meal_sem;
-	sem_t				*num_meals_sem;
-	
 	pthread_t			check_end;
 }						t_meta;
 
@@ -85,8 +84,7 @@ typedef struct s_philo
 	sem_t		*forks;
 	sem_t		*print_sem;
 	sem_t		*end_sem;
-	sem_t		*last_meal_sem;
-	sem_t		*num_meals_sem;
+	sem_t		*meal_sem;
 	t_meta				*meta;
 }						t_philo;
 
@@ -110,30 +108,35 @@ void	destroy_philos(t_meta *meta, int nth_philo, char *str);
 void	destroy_sem(t_meta *meta, int num_sem, char *str);
 void	exit_error(char *msg, t_meta *meta);
 void					safe_free(void *memory);
+void	safe_free_num(int num, ...);
 
 /* Functions for monitor thread: monitor.c */
 int	check_any_dead(t_meta *meta);
 int	check_all_full(t_meta *meta);
 void	*monitor(void *arg);
 
-/* Functions for philosophers: philos.c */
+/* Functions for philosophers: philos_bonus.c */
 void	drop_forks(int i, t_philo *philo);
 int	eating(t_philo *philo);
 int	sleeping(t_philo *philo);
 int	thinking(t_philo *philo);
 void	routine(t_meta *meta, int i);
 
-/* Starting and stopping cycle: cycle.c */
+/* Starting and stopping cycle: cycle_bonus.c */
 int	start(t_meta *meta);
 int	stop(t_meta *meta);
 
-/* Functions for single philosopher: single_philo.c */
+/* Functions for single philosopher: single_philo_bonus.c */
 void	*single_philo(t_philo *philo);
 
-/* Utility functions: utils.c */
+/* Utility functions: utils_bonus.c */
 int	quick_check_dead(t_philo *philo);
 int	print_status(char *str, t_philo *philo);
 int	usleep_check(t_philo *philo, time_t ms);
 time_t	time_now_ms(void);
 
+/*	Libft functions: libft_bonus.c */
+char	*ft_itoa(int n);
+size_t	ft_strlen(const char *s);
+char	*ft_strjoin(char const *s1, char const *s2);
 #endif

@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 11:16:00 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/29 13:05:28 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,19 +42,19 @@ int	eating(t_philo *philo)
 		return (drop_forks(2, philo), 1);
 	if (print_status(GREEN "is eating" RESET, philo) == 1)
 		return (drop_forks(2, philo), 1);
-	sem_wait(philo->last_meal_sem);
+	sem_wait(philo->meal_sem);
 	philo->last_meal = time_now_ms();
+	dprintf(2, "%d: last_meal: %ld\n", philo->id, philo->last_meal);
 	philo->eating = 1;
-	sem_post(philo->last_meal_sem);
+	sem_post(philo->meal_sem);
 	if (1 == usleep_check(philo, philo->meta->time_eat))
 		return (drop_forks(2, philo), 1);
 	drop_forks(2, philo);
-	sem_wait(philo->num_meals_sem);
+	sem_wait(philo->meal_sem);
 	philo->num_meals++;
-	sem_post(philo->num_meals_sem);
-	sem_wait(philo->last_meal_sem);
 	philo->eating = 0;
-	sem_post(philo->last_meal_sem);
+	sem_post(philo->meal_sem);
+	dprintf(2, "%d: here\n", philo->id);
 	return (0);
 }
 

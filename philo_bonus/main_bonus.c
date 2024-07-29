@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:45:06 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 11:08:51 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/29 12:50:36 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,8 @@ int	main(int argc, char **argv)
 	meta = init_meta(argc, argv);
 	if (!meta)
 		return (1);
-	dprintf(2, "here1\n");
-	// destroy_philos(meta, meta->num_philos, "END\n");
 	if (start(meta) != 0)
 		return (1);
-	dprintf(2, "here2\n");
 	stop(meta);
 	return (0);
 }

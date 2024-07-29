@@ -1,5 +1,6 @@
 NAME = philo_bonus
-CFILES = main_bonus.c check_bonus.c init_bonus.c exit_bonus.c cycle_bonus.c single_philo_bonus.c philos_bonus.c utils_bonus.c
+CFILES = main_bonus.c check_bonus.c init_bonus.c exit_bonus.c cycle_bonus.c monitor_bonus.c \
+	single_philo_bonus.c philos_bonus.c utils_bonus.c libft_bonus.c
 OFILES = ${CFILES:.c=.o}
 CFLAGS = -Wall -Wextra -Werror -pthread
 

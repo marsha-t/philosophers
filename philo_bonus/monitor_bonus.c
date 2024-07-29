@@ -6,11 +6,11 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 05:22:30 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 11:19:51 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/29 13:04:22 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 /*	check_any_dead checks whether any of the philosophers is dead
 	if so, check_dead updates end_cycle and announces it 
@@ -24,18 +24,19 @@ int	check_any_dead(t_meta *meta)
 	i = 0;
 	while (i < meta->num_philos)
 	{
-		sem_wait(&meta->last_meal_sem);
+		sem_wait(meta->meal_sem);
 		if (0 == meta->philos[i]->eating && \
 			time_now_ms() - meta->philos[i]->last_meal >= meta->time_die)
 		{
-			sem_post(&meta->last_meal_sem);
+			sem_post(meta->meal_sem);
+			dprintf(2, "%d: last_meal: %ld, time_now_ms() - last_meal: %ld\n", i + 1, meta->philos[i]->last_meal, time_now_ms() - meta->philos[i]->last_meal);
 			print_status(RED "is dead" RESET, meta->philos[i]);
-			sem_wait(&meta->end_sem);
+			sem_wait(meta->end_sem);
 			meta->end_cycle = 1;
-			sem_post(&meta->end_sem);
+			sem_post(meta->end_sem);
 			return (1);
 		}
-		sem_post(&meta->last_meal_sem);
+		sem_post(meta->meal_sem);
 		i++;
 	}
 	return (0);
@@ -53,18 +54,18 @@ int	check_all_full(t_meta *meta)
 	i = 0;
 	while (i < meta->num_philos)
 	{
-		sem_wait(&meta->num_meals_sem);
+		sem_wait(meta->philos[i]->meal_sem);
 		if (meta->philos[i]->num_meals < meta->min_meals)
 		{
-			sem_post(&meta->num_meals_sem);
+			sem_post(meta->philos[i]->meal_sem);
 			return (0);
 		}
-		sem_post(&meta->num_meals_sem);
+		sem_post(meta->philos[i]->meal_sem);
 		i++;
 	}
-	sem_wait(&meta->end_sem);
+	sem_wait(meta->end_sem);
 	meta->end_cycle = 1;
-	sem_post(&meta->end_sem);
+	sem_post(meta->end_sem);
 	return (1);
 }
 
@@ -75,8 +76,12 @@ void	*monitor(void *arg)
 	t_meta	*meta;
 
 	meta = (t_meta *)arg;
+
 	while (1)
+	{
 		if (1 == check_any_dead(meta) || 1 == check_all_full(meta))
 			break ;
+		
+	}
 	return (NULL);
 }

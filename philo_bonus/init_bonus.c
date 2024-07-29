@@ -6,24 +6,23 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 10:17:16 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 10:57:36 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/29 12:28:17 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-/*	sem_unlink_all removes all semaphores 
+/*	sem_unlink_all removes all semaphores (incl global AND local)
 	(in case they already exist) 
 	- sem_unlink can return -1 and set errno if sempahore doesn't exist
 		so reset errno at end of function
 	*/
+// WIP: remove local sems
 void	sem_unlink_all(void)
 {
 	sem_unlink("/forks");
 	sem_unlink("/print");
 	sem_unlink("/end");
-	sem_unlink("/last_meal");
-	sem_unlink("/num_meals");
 	errno = 0;
 }
 
@@ -43,12 +42,9 @@ int	init_sem(t_meta *meta)
 	meta->end_sem = sem_open("/end", O_CREAT, 0644, 1);
 	if (meta->end_sem == SEM_FAILED)
 		return (destroy_sem(meta, 2, ERR_SEM_OPEN), 1);
-	meta->last_meal_sem = sem_open("/last_meal", O_CREAT, 0644, 1);
-	if (meta->last_meal_sem == SEM_FAILED)
-		return (destroy_sem(meta, 3, ERR_SEM_OPEN), 1);
-	meta->num_meals_sem = sem_open("/num_meals", O_CREAT, 0644, 1);
-	if (meta->num_meals_sem == SEM_FAILED)
-		return (destroy_sem(meta, 4, ERR_SEM_OPEN), 1);
+	// meta->meal_sem = sem_open("/meal", O_CREAT, 0644, 1);
+	// if (meta->meal_sem == SEM_FAILED)
+	// 	return (destroy_sem(meta, 3, ERR_SEM_OPEN), 1);
 	return (0);
 }
 
@@ -60,7 +56,7 @@ int	init_sem(t_meta *meta)
 t_philo	*init_philo(t_meta *meta, int i)
 {
 	t_philo	*philo;
-
+	
 	philo = malloc(sizeof(t_philo));
 	if (!philo)
 		return (NULL);
@@ -71,8 +67,6 @@ t_philo	*init_philo(t_meta *meta, int i)
 	philo->forks = meta->forks;
 	philo->print_sem = meta->print_sem;
 	philo->end_sem = meta->end_sem;
-	philo->last_meal_sem = meta->last_meal_sem;
-	philo->num_meals_sem = meta->num_meals_sem;
 	philo->meta = meta;
 	return (philo);
 }
@@ -86,13 +80,37 @@ int	init_philos(t_meta *meta)
 
 	meta->philos = malloc(sizeof(t_philo *) * meta->num_philos);
 	if (!meta->philos)
-		return (destroy_sem(meta, 4, ERR_MALLOC_PHILOS), 1);
+		return (destroy_sem(meta, 3, ERR_MALLOC_PHILOS), 1);
 	i = 0;
 	while (i < meta->num_philos)
 	{
 		meta->philos[i] = init_philo(meta, i);
 		if (!meta->philos[i])
 			return (destroy_philos(meta, i, ERR_MALLOC_PHILO_I), 1);
+		i++;
+	}
+	return (0);
+}
+
+/*	init_philo_sem creates a 'local' sem
+	- sem controls philo's eating, last_meal and num_meals 
+	- sem is 'uniquely' named */
+int	init_philo_sem(t_meta *meta)
+{
+	int	i;
+	char	*meal_sem_name;
+	char	*id_str;
+
+	i = 0;
+	while (i < meta->num_philos)
+	{
+		id_str = ft_itoa(i);
+		meal_sem_name = ft_strjoin("/meal_", id_str);
+		sem_unlink(meal_sem_name);
+		meta->philos[i]->meal_sem = sem_open(meal_sem_name, O_CREAT, 0644, 1);
+		safe_free_num(2, id_str, meal_sem_name);
+		if (meta->philos[i]->meal_sem == SEM_FAILED)
+			return (1); // update exit function
 		i++;
 	}
 	return (0);
@@ -122,9 +140,11 @@ t_meta	*init_meta(int argc, char **argv)
 	meta->philo_pids = malloc(sizeof(pid_t) * meta->num_philos);
 	if (!meta->philo_pids)
 		return (exit_error(ERR_MALLOC_PIDS, meta), NULL);
-	if (init_sem(meta))
+	if (init_sem(meta) == 1)
 		return (0);
-	if (1 == init_philos(meta))
+	if (init_philos(meta) == 1)
+		return (0);
+	if (init_philo_sem(meta) == 1)
 		return (0);
 	return (meta);
 }
