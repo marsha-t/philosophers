@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   init_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 10:17:16 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/24 11:22:19 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/29 10:57:36 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,9 @@ t_meta	*init_meta(int argc, char **argv)
 	meta->philos = 0;
 	if (6 == argc)
 		meta->min_meals = ft_atoi(argv[5]);
+	meta->philo_pids = malloc(sizeof(pid_t) * meta->num_philos);
+	if (!meta->philo_pids)
+		return (exit_error(ERR_MALLOC_PIDS, meta), NULL);
 	if (init_sem(meta))
 		return (0);
 	if (1 == init_philos(meta))

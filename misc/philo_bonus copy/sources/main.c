@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcombeau <mcombeau@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 11:46:06 by mcombeau          #+#    #+#             */
-/*   Updated: 2022/09/11 13:53:52 by mcombeau         ###   ########.fr       */
+/*   Updated: 2024/07/29 10:43:55 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ bool	has_simulation_stopped(t_table *table)
 
 	sem_wait(table->sem_stop);
 	ret = table->stop_sim;
-	sem_post(table->sem_stop);
+	sem_post(table->sem_stop);«
 	return (ret);
 }
 

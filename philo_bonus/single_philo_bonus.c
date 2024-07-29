@@ -1,33 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main_bonus.c                                       :+:      :+:    :+:   */
+/*   single_philo_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/29 06:45:06 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 11:08:51 by mateo            ###   ########.fr       */
+/*   Created: 2024/07/24 11:46:29 by mateo             #+#    #+#             */
+/*   Updated: 2024/07/29 10:53:43 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-int	main(int argc, char **argv)
+/*	single_philo runs the routine for a single philo 
+	i.e., pick up fork and die */
+void	*single_philo(t_philo *philo)
 {
-	t_meta	*meta;
-
-	if (argc < 5 || argc > 6)
-		return (exit_error(ERR_ARGS, 0), 1);
-	if (check_arg(argc, argv) == 0)
-		return (exit_error(ERR_INVALID, 0), 1);
-	meta = init_meta(argc, argv);
-	if (!meta)
-		return (1);
-	dprintf(2, "here1\n");
-	// destroy_philos(meta, meta->num_philos, "END\n");
-	if (start(meta) != 0)
-		return (1);
-	dprintf(2, "here2\n");
-	stop(meta);
-	return (0);
+	sem_wait(philo->forks);
+	print_status("has taken a fork", philo);
+	usleep_check(philo, philo->meta->time_die);
+	sem_post(philo->forks);
+	return (NULL);
 }

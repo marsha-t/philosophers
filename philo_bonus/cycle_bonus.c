@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cycle.c                                            :+:      :+:    :+:   */
+/*   cycle_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 06:14:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/24 17:58:53 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/29 11:20:10 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	start(t_meta *meta)
 		i++;
 	}
 	if (pthread_create(&meta->check_end, NULL, &monitor, meta) != 0)
-		return (destroy_mutexes(meta, 4, ERR_THREAD_CREATE), 1);
+		return (destroy_philos(meta, meta->num_philos, ERR_THREAD_CREATE), 1);
 	i = 0;
 	while (i < meta->num_philos)
 	{
@@ -38,7 +38,8 @@ int	start(t_meta *meta)
 			return (1); // add error function
 		else if (pid == 0) // child
 		{
-			routine(meta);
+			routine(meta, i);
+			exit (0);
 		}
 		else // parent
 			meta->philo_pids[i] = pid;
@@ -48,19 +49,18 @@ int	start(t_meta *meta)
 }
 
 /*	stop 'stops' cycle of eating, sleeping and thinking
-	- main thread waits for all threads 
-	- destroys all when all threads have terminated */
+	- main process waits for all philosopher processes
+	 */
 int	stop(t_meta *meta)
 {
 	int	i;
 
 	i = 0;
-	pthread_join(meta->check_end, NULL);
 	while (i < meta->num_philos)
 	{
-		pthread_join(meta->philos[i]->thread, NULL);
+		waitpid(meta->philo_pids[i], NULL, 0);
 		i++;
 	}
-	destroy_mutexes(meta, 4, NULL);
+	destroy_philos(meta, meta->num_philos, NULL);
 	return (0);
 }

@@ -1,0 +1,109 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philos_bonus.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
+/*   Updated: 2024/07/29 11:16:00 by mateo            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philo_bonus.h"
+
+/*	drop_forks 'drops' forks using sem_post
+	- i = number of forks to drop 
+	*/
+void	drop_forks(int i, t_philo *philo)
+{
+	sem_post(philo->forks);
+	if (i == 2)
+		sem_post(philo->forks);
+}
+/*	eating
+	- order: 
+		- picks up forks
+		- prints status
+		- update last_meal and eating
+		- pauses philo for time_eat
+		- releases forks
+		- update num_meals and eating
+	- returns 1 if end_cycle is 1 (via quick_check_dead)
+		when printing status or eating
+*/
+int	eating(t_philo *philo)
+{
+	sem_wait(philo->forks);
+	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
+		return (drop_forks(1, philo), 1);
+	sem_wait(philo->forks);
+	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
+		return (drop_forks(2, philo), 1);
+	if (print_status(GREEN "is eating" RESET, philo) == 1)
+		return (drop_forks(2, philo), 1);
+	sem_wait(philo->last_meal_sem);
+	philo->last_meal = time_now_ms();
+	philo->eating = 1;
+	sem_post(philo->last_meal_sem);
+	if (1 == usleep_check(philo, philo->meta->time_eat))
+		return (drop_forks(2, philo), 1);
+	drop_forks(2, philo);
+	sem_wait(philo->num_meals_sem);
+	philo->num_meals++;
+	sem_post(philo->num_meals_sem);
+	sem_wait(philo->last_meal_sem);
+	philo->eating = 0;
+	sem_post(philo->last_meal_sem);
+	return (0);
+}
+
+/*	sleeping 
+	- order
+		- prints status 
+		- pauses philo for time_sleep
+	- returns 1 if end_cycle is 1 (via quick_check_dead)
+		when printing status or sleeping */
+int	sleeping(t_philo *philo)
+{
+	if (print_status(BLUE "is sleeping" RESET, philo) == 1)
+		return (1);
+	if (1 == usleep_check(philo, philo->meta->time_sleep))
+		return (1);
+	return (0);
+}
+
+/*	thinking 
+	- prints status and returns immediately
+	- returns 1 if end_cycle is 1 (via quick_check_dead)
+		when printing status
+*/
+int	thinking(t_philo *philo)
+{
+	if (print_status(MAGENTA "is thinking" RESET, philo) == 1)
+		return (1);
+	return (0);
+}
+
+/*	routine sets philos to eat, sleep and think until the philo is dead
+	- even numbered philos sleep for 1000 microseconds (= 1 milisecond)
+	- philos start eating, sleeping then thinking */
+void	routine(t_meta *meta, int i)
+{
+	t_philo	*philo;
+
+	philo = meta->philos[i];
+	if (1 == philo->meta->num_philos)
+	{
+		single_philo(philo);
+		return ;
+	}
+	else if (0 == philo->id % 2)
+		usleep(1000);
+	while (0 == quick_check_dead(philo))
+	{
+		if (0 == eating(philo))
+			if (0 == sleeping(philo))
+				thinking(philo);
+	}
+}

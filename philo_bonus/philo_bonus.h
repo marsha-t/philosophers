@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   philo_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:37:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/24 11:55:24 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/29 11:27:20 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,12 @@
 
 # define ERR_MALLOC_META "Malloc error for meta"
 # define ERR_MALLOC_FORKS "Malloc error for forks"
-
+# define ERR_MALLOC_PIDS "Malloc error for philo_pids"
 # define ERR_MALLOC_PHILOS "Malloc error for philos"
 # define ERR_MALLOC_PHILO_I "Malloc error for philo[i]"
+
 # define ERR_THREAD_CREATE "Error creating threads"
 # define ERR_THREAD_JOIN "Error joining threads"
-# define ERR_MUTEX_INIT "Error initialising mutex"
 
 /****************************************************************************/
 /* Structures																*/
@@ -69,7 +69,7 @@ typedef struct s_meta
 	sem_t				*forks;
 	sem_t				*print_sem;
 	sem_t				*end_sem;
-	sem_t				*last_meal_sem;
+	sem_t				*meal_sem;
 	sem_t				*num_meals_sem;
 	
 	pthread_t			check_end;
@@ -112,13 +112,28 @@ void	exit_error(char *msg, t_meta *meta);
 void					safe_free(void *memory);
 
 /* Functions for monitor thread: monitor.c */
+int	check_any_dead(t_meta *meta);
+int	check_all_full(t_meta *meta);
+void	*monitor(void *arg);
 
 /* Functions for philosophers: philos.c */
+void	drop_forks(int i, t_philo *philo);
+int	eating(t_philo *philo);
+int	sleeping(t_philo *philo);
+int	thinking(t_philo *philo);
+void	routine(t_meta *meta, int i);
 
 /* Starting and stopping cycle: cycle.c */
+int	start(t_meta *meta);
+int	stop(t_meta *meta);
 
 /* Functions for single philosopher: single_philo.c */
+void	*single_philo(t_philo *philo);
 
 /* Utility functions: utils.c */
+int	quick_check_dead(t_philo *philo);
+int	print_status(char *str, t_philo *philo);
+int	usleep_check(t_philo *philo, time_t ms);
+time_t	time_now_ms(void);
 
 #endif
