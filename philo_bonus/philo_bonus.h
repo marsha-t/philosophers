@@ -22,6 +22,8 @@
 # include <sys/time.h>
 # include <unistd.h>
 # include <errno.h>
+# include <fcntl.h>
+# include <sys/stat.h>
 
 # define RESET "\x1b[0m"
 # define RED "\x1b[31m"
@@ -63,12 +65,14 @@ typedef struct s_meta
 	time_t				start_time;
 	int					end_cycle;
 	t_philo				**philos;
-	pthread_t			check_end;
+	pid_t				*philo_pids;
 	sem_t				*forks;
 	sem_t				*print_sem;
-	sem_t				*end_utex;
-	sem_t				*last_meal_mutex;
-	sem_t				*num_meals_mutex;
+	sem_t				*end_sem;
+	sem_t				*last_meal_sem;
+	sem_t				*num_meals_sem;
+	
+	pthread_t			check_end;
 }						t_meta;
 
 typedef struct s_philo
@@ -94,43 +98,27 @@ int						only_digits(char *str);
 int						ft_atoi(const char *str);
 int						check_arg(int argc, char **argv);
 
-/* Initialise simulation: init.c */
-int						init_forks(t_meta *meta);
-t_philo					*init_philo(t_meta *meta, int i);
-int						init_philos(t_meta *meta);
-int						init_oth_mutex(t_meta *meta);
-t_meta					*init_meta(int argc, char **argv);
+/* Initialise simulation: init_bonus.c */
+void	sem_unlink_all(void);
+int	init_sem(t_meta *meta);
+t_philo	*init_philo(t_meta *meta, int i);
+int	init_philos(t_meta *meta);
+t_meta	*init_meta(int argc, char **argv);
 
-/*	Clear resources: free and destroy: exit.c*/
-
-void					destroy_philos(t_meta *meta, int nth_philo, char *str);
-void					destroy_forks(t_meta *meta, int nth_fork, char *str);
-void					exit_error(char *msg, t_meta *meta);
+/*	Clear resources: free and destroy: exit_bonus.c*/
+void	destroy_philos(t_meta *meta, int nth_philo, char *str);
+void	destroy_sem(t_meta *meta, int num_sem, char *str);
+void	exit_error(char *msg, t_meta *meta);
 void					safe_free(void *memory);
 
 /* Functions for monitor thread: monitor.c */
-int						check_any_dead(t_meta *meta);
-int						check_all_full(t_meta *meta);
-void					*monitor(void *arg);
 
-/* Functions for philosophers: philos_cycle.c */
-void					unlock_forks(int i, t_philo *philo);
-int						eating(t_philo *philo);
-int						sleeping(t_philo *philo);
-int						thinking(t_philo *philo);
-void					*routine(void *arg);
+/* Functions for philosophers: philos.c */
 
 /* Starting and stopping cycle: cycle.c */
-int						start(t_meta *meta);
-int						stop(t_meta *meta);
 
 /* Functions for single philosopher: single_philo.c */
-void					*single_philo(t_philo *philo);
 
 /* Utility functions: utils.c */
-int						quick_check_dead(t_philo *philo);
-int						print_status(char *str, t_philo *philo);
-int						usleep_check(t_philo *philo, time_t ms);
-time_t					time_now_ms(void);
 
 #endif

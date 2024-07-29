@@ -46,7 +46,7 @@ void	destroy_sem(t_meta *meta, int num_sem, char *str)
 		sem_close(meta->last_meal_sem);
 	if (num_sem >= 4)
 		sem_close(meta->num_meals_sem);
-	sem_unlink_all(meta);
+	sem_unlink_all();
 	exit_error(str, meta);
 }
 

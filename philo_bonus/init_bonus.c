@@ -33,9 +33,7 @@ void	sem_unlink_all(void)
 	- returns 1 if error w/ malloc or mutex init */
 int	init_sem(t_meta *meta)
 {
-	int	i;
-
-	sem_unlink_all()
+	sem_unlink_all();
 	meta->forks = sem_open("/forks", O_CREAT, 0644, meta->num_philos);
 	if (meta->forks == SEM_FAILED)
 		return (exit_error(ERR_SEM_OPEN, meta), 1);

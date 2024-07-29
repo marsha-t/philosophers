@@ -23,10 +23,10 @@ int	main(int argc, char **argv)
 	meta = init_meta(argc, argv);
 	if (!meta)
 		return (1);
-	dprintf(2, "here\n");
-	destroy_philos(meta, meta->num_philos, "END\n");
-	// if (start(meta) != 0)
-	// 	return (1);
+	// dprintf(2, "here\n");
+	// destroy_philos(meta, meta->num_philos, "END\n");
+	if (start(meta) != 0)
+		return (1);
 	// stop(meta);
 	return (0);
 }
