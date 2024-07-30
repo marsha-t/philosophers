@@ -17,12 +17,24 @@
 	- sem_unlink can return -1 and set errno if sempahore doesn't exist
 		so reset errno at end of function
 	*/
-// WIP: remove local sems
 void	sem_unlink_all(void)
 {
 	sem_unlink("/forks");
 	sem_unlink("/print");
 	sem_unlink("/end");
+	int	i;
+	char	*id_str;
+	char	*meal_sem_name;
+	i = 0;
+	while (i < 200)
+	{
+		id_str = ft_itoa(i);
+		meal_sem_name = ft_strjoin("/meal_", id_str);
+		sem_unlink(meal_sem_name);
+		safe_free(id_str);
+		safe_free(meal_sem_name);
+		i++;
+	}
 	errno = 0;
 }
 
@@ -42,9 +54,6 @@ int	init_sem(t_meta *meta)
 	meta->end_sem = sem_open("/end", O_CREAT, 0644, 1);
 	if (meta->end_sem == SEM_FAILED)
 		return (destroy_sem(meta, 2, ERR_SEM_OPEN), 1);
-	// meta->meal_sem = sem_open("/meal", O_CREAT, 0644, 1);
-	// if (meta->meal_sem == SEM_FAILED)
-	// 	return (destroy_sem(meta, 3, ERR_SEM_OPEN), 1);
 	return (0);
 }
 
@@ -56,18 +65,24 @@ int	init_sem(t_meta *meta)
 t_philo	*init_philo(t_meta *meta, int i)
 {
 	t_philo	*philo;
-	
+	char	*id_str;
+
 	philo = malloc(sizeof(t_philo));
 	if (!philo)
 		return (NULL);
 	philo->id = i + 1;
 	philo->num_meals = 0;
 	philo->eating = 0;
-	philo->end_cycle = &meta->end_cycle;
+	philo->end_cycle = 0;
 	philo->forks = meta->forks;
 	philo->print_sem = meta->print_sem;
 	philo->end_sem = meta->end_sem;
 	philo->meta = meta;
+	id_str = ft_itoa(i);
+	philo->meal_sem_name = ft_strjoin("/meal_", id_str);
+	safe_free(id_str);
+	if (!philo->meal_sem_name)
+		return (free(philo), NULL);
 	return (philo);
 }
 
@@ -98,19 +113,14 @@ int	init_philos(t_meta *meta)
 int	init_philo_sem(t_meta *meta)
 {
 	int	i;
-	char	*meal_sem_name;
-	char	*id_str;
 
 	i = 0;
 	while (i < meta->num_philos)
 	{
-		id_str = ft_itoa(i);
-		meal_sem_name = ft_strjoin("/meal_", id_str);
-		sem_unlink(meal_sem_name);
-		meta->philos[i]->meal_sem = sem_open(meal_sem_name, O_CREAT, 0644, 1);
-		safe_free_num(2, id_str, meal_sem_name);
+		sem_unlink(meta->philos[i]->meal_sem_name);
+		meta->philos[i]->meal_sem = sem_open(meta->philos[i]->meal_sem_name, O_CREAT, 0644, 1);
 		if (meta->philos[i]->meal_sem == SEM_FAILED)
-			return (1); // update exit function
+			return (destroy_local_sem(meta, i, ERR_SEM_OPEN), 1);
 		i++;
 	}
 	return (0);
@@ -131,7 +141,6 @@ t_meta	*init_meta(int argc, char **argv)
 	meta->time_die = ft_atoi(argv[2]);
 	meta->time_eat = ft_atoi(argv[3]);
 	meta->time_sleep = ft_atoi(argv[4]);
-	meta->end_cycle = 0;
 	meta->min_meals = 0;
 	meta->forks = 0;
 	meta->philos = 0;

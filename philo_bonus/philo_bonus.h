@@ -23,9 +23,11 @@
 # include <unistd.h>
 # include <errno.h>
 # include <fcntl.h>
-# include <sys/stat.h>
+// # include <sys/stat.h>
 # include <stdarg.h>
 
+# include <sys/types.h>
+# include <sys/wait.h>
 # define RESET "\x1b[0m"
 # define RED "\x1b[31m"
 # define GREEN "\x1b[32m"
@@ -52,6 +54,11 @@
 # define ERR_THREAD_JOIN "Error joining threads"
 
 /****************************************************************************/
+/* Return Values 															*/
+/****************************************************************************/
+# define PHILO_FULL 2
+# define PHILO_DEAD 3
+/****************************************************************************/
 /* Structures																*/
 /****************************************************************************/
 typedef struct s_philo	t_philo;
@@ -64,14 +71,12 @@ typedef struct s_meta
 	time_t				time_sleep;
 	int					min_meals;
 	time_t				start_time;
-	int					end_cycle;
 	t_philo				**philos;
 	pid_t				*philo_pids;
 	sem_t				*forks;
 	sem_t				*print_sem;
 	sem_t				*end_sem;
 	sem_t				*meal_sem;
-	pthread_t			check_end;
 }						t_meta;
 
 typedef struct s_philo
@@ -80,10 +85,12 @@ typedef struct s_philo
 	int					num_meals;
 	time_t				last_meal;
 	int					eating;
-	int					*end_cycle;
+	int					end_cycle;
+	pthread_t			check_end;
 	sem_t		*forks;
 	sem_t		*print_sem;
 	sem_t		*end_sem;
+	char		*meal_sem_name;
 	sem_t		*meal_sem;
 	t_meta				*meta;
 }						t_philo;
@@ -104,11 +111,11 @@ int	init_philos(t_meta *meta);
 t_meta	*init_meta(int argc, char **argv);
 
 /*	Clear resources: free and destroy: exit_bonus.c*/
+void	destroy_local_sem(t_meta *meta, int nth_philo, char *str);
 void	destroy_philos(t_meta *meta, int nth_philo, char *str);
 void	destroy_sem(t_meta *meta, int num_sem, char *str);
 void	exit_error(char *msg, t_meta *meta);
 void					safe_free(void *memory);
-void	safe_free_num(int num, ...);
 
 /* Functions for monitor thread: monitor.c */
 int	check_any_dead(t_meta *meta);
@@ -120,14 +127,14 @@ void	drop_forks(int i, t_philo *philo);
 int	eating(t_philo *philo);
 int	sleeping(t_philo *philo);
 int	thinking(t_philo *philo);
-void	routine(t_meta *meta, int i);
+int	routine(t_meta *meta, int i);
 
 /* Starting and stopping cycle: cycle_bonus.c */
 int	start(t_meta *meta);
 int	stop(t_meta *meta);
 
 /* Functions for single philosopher: single_philo_bonus.c */
-void	*single_philo(t_philo *philo);
+int	single_philo(t_philo *philo);
 
 /* Utility functions: utils_bonus.c */
 int	quick_check_dead(t_philo *philo);

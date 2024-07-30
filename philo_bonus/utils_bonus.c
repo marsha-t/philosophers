@@ -17,7 +17,7 @@
 int	quick_check_dead(t_philo *philo)
 {
 	sem_wait(philo->end_sem);
-	if (1 == *(philo->end_cycle))
+	if (1 == philo->end_cycle)
 	{
 		sem_post(philo->end_sem);
 		return (1);

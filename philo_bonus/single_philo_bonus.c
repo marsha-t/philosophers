@@ -14,11 +14,15 @@
 
 /*	single_philo runs the routine for a single philo 
 	i.e., pick up fork and die */
-void	*single_philo(t_philo *philo)
+int	single_philo(t_philo *philo)
 {
 	sem_wait(philo->forks);
 	print_status("has taken a fork", philo);
 	usleep_check(philo, philo->meta->time_die);
 	sem_post(philo->forks);
-	return (NULL);
+	// sem_close(philo->meal_sem);
+	// sem_unlink(philo->meal_sem_name);
+	// destroy_philos(philo->meta, philo->meta->num_philos, 0);
+	// dprintf(2, "dead\n");
+	return (PHILO_DEAD);
 }

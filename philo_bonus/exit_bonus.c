@@ -12,6 +12,19 @@
 
 #include "philo_bonus.h"
 
+void	destroy_local_sem(t_meta *meta, int nth_philo, char *str)
+{
+	int	i;
+	i = 0;
+	while (i < nth_philo)
+	{
+		sem_close(meta->philos[i]->meal_sem);
+		sem_unlink(meta->philos[i]->meal_sem_name);
+		i++;
+	}
+	destroy_philos(meta, meta->num_philos, str);
+}
+
 /*	destroy_philos frees the individual philo struct
 	and then destroy semaphores
 	- nth_philo is the philo that failed malloc
@@ -23,6 +36,7 @@ void	destroy_philos(t_meta *meta, int nth_philo, char *str)
 	i = 0;
 	while (i < nth_philo)
 	{
+		safe_free(meta->philos[i]->meal_sem_name);
 		safe_free(meta->philos[i]);
 		i++;
 	}
@@ -34,7 +48,6 @@ void	destroy_philos(t_meta *meta, int nth_philo, char *str)
 	and then exits with error
 	- num_sem is the semaphore that failed to be opened
 */
-// WIP: close local sems?
 void	destroy_sem(t_meta *meta, int num_sem, char *str)
 {
 	if (num_sem >= 1)
@@ -43,8 +56,6 @@ void	destroy_sem(t_meta *meta, int num_sem, char *str)
 		sem_close(meta->print_sem);
 	if (num_sem >= 3)
 		sem_close(meta->end_sem);
-	if (num_sem >= 4)
-		sem_close(meta->meal_sem);
 	sem_unlink_all();
 	exit_error(str, meta);
 }
@@ -57,7 +68,11 @@ void	exit_error(char *msg, t_meta *meta)
 	if (msg)
 		printf("%s\n", msg);
 	if (meta)
+	{
+		if (meta->philo_pids)
+			safe_free(meta->philo_pids);
 		safe_free(meta);
+	}
 }
 
 /*	safe_free frees the pointer to allocated memory and
@@ -66,18 +81,4 @@ void	safe_free(void *memory)
 {
 	free(memory);
 	memory = 0;
-}
-
-/*	free_num frees an arbitrary number of pointers
-	num = number of pointers to be freed*/
-void	safe_free_num(int num, ...)
-{
-	va_list	args;
-
-	va_start(args, num);
-	while (num--)
-	{
-		safe_free(va_arg(args, void *));
-	}
-	va_end(args);
 }

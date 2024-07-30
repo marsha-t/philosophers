@@ -44,17 +44,27 @@ int	eating(t_philo *philo)
 		return (drop_forks(2, philo), 1);
 	sem_wait(philo->meal_sem);
 	philo->last_meal = time_now_ms();
-	dprintf(2, "%d: last_meal: %ld\n", philo->id, philo->last_meal);
 	philo->eating = 1;
 	sem_post(philo->meal_sem);
 	if (1 == usleep_check(philo, philo->meta->time_eat))
-		return (drop_forks(2, philo), 1);
+	{
+		
+		drop_forks(2, philo);
+		exit (PHILO_DEAD);
+		// return (drop_forks(2, philo), 1);
+	}
+
 	drop_forks(2, philo);
 	sem_wait(philo->meal_sem);
 	philo->num_meals++;
 	philo->eating = 0;
+	if (philo->meta->min_meals != 0 && philo->num_meals >= philo->meta->min_meals)
+	{
+		sem_post(philo->meal_sem);
+		destroy_local_sem(philo->meta, philo->meta->num_philos, 0);
+		exit (PHILO_FULL);
+	}
 	sem_post(philo->meal_sem);
-	dprintf(2, "%d: here\n", philo->id);
 	return (0);
 }
 
@@ -67,9 +77,15 @@ int	eating(t_philo *philo)
 int	sleeping(t_philo *philo)
 {
 	if (print_status(BLUE "is sleeping" RESET, philo) == 1)
-		return (1);
+	{
+		exit (PHILO_DEAD);
+		// return (1);
+	}
 	if (1 == usleep_check(philo, philo->meta->time_sleep))
-		return (1);
+	{
+		exit (PHILO_DEAD);
+		// return (1);
+	}
 	return (0);
 }
 
@@ -81,22 +97,24 @@ int	sleeping(t_philo *philo)
 int	thinking(t_philo *philo)
 {
 	if (print_status(MAGENTA "is thinking" RESET, philo) == 1)
-		return (1);
+		exit (PHILO_DEAD);
+		// return (1);
 	return (0);
 }
 
 /*	routine sets philos to eat, sleep and think until the philo is dead
 	- even numbered philos sleep for 1000 microseconds (= 1 milisecond)
 	- philos start eating, sleeping then thinking */
-void	routine(t_meta *meta, int i)
+int	routine(t_meta *meta, int i)
 {
 	t_philo	*philo;
 
 	philo = meta->philos[i];
+	if (pthread_create(&philo->check_end, NULL, &monitor, philo) != 0)
+		exit (-1); // update error 
 	if (1 == philo->meta->num_philos)
 	{
-		single_philo(philo);
-		return ;
+		exit (single_philo(philo));
 	}
 	else if (0 == philo->id % 2)
 		usleep(1000);
@@ -106,4 +124,6 @@ void	routine(t_meta *meta, int i)
 			if (0 == sleeping(philo))
 				thinking(philo);
 	}
+	pthread_join(philo->check_end, NULL);
+	exit (0);
 }

@@ -22,16 +22,12 @@ int	start(t_meta *meta)
 	pid_t	pid;
 
 	meta->start_time = time_now_ms();
-	dprintf(2, "start time: %ld\n", meta->start_time);
-
 	i = 0;
 	while (i < meta->num_philos)
 	{
 		meta->philos[i]->last_meal = meta->start_time;
 		i++;
 	}
-	if (pthread_create(&meta->check_end, NULL, &monitor, meta) != 0)
-		return (destroy_philos(meta, meta->num_philos, ERR_THREAD_CREATE), 1);
 	i = 0;
 	while (i < meta->num_philos)
 	{
@@ -50,20 +46,57 @@ int	start(t_meta *meta)
 	return (0);
 }
 
+int	kill_philos(t_meta *meta)
+{
+	int	i;
+
+	i = 0;
+	while (i < meta->num_philos)
+	{
+		kill(meta->philo_pids[i], SIGKILL);
+		i++;
+	}
+	return (0);
+}
+
 /*	stop 'stops' cycle of eating, sleeping and thinking
 	- main process waits for all philosopher processes
 	 */
 int	stop(t_meta *meta)
 {
 	int	i;
+	int	status;
+	int	exit_status;
+	int	num_philo_full;
 
 	i = 0;
-	pthread_join(meta->check_end, NULL);
-	while (i < meta->num_philos)
+	num_philo_full = 0;
+	while (1)
 	{
-		waitpid(meta->philo_pids[i], NULL, 0);
+		if (waitpid(meta->philo_pids[i], &status, WNOHANG) != 0)
+		{
+			if (WIFEXITED(status))
+			{
+				exit_status = WEXITSTATUS(status);
+				if (exit_status == PHILO_FULL)
+				{
+					num_philo_full++;
+					if (num_philo_full == meta->num_philos)
+					{
+						break ;
+					}
+				}
+				else if (exit_status == PHILO_DEAD)
+				{
+					kill_philos(meta);
+					break ;
+				}
+			}
+		}
 		i++;
+		if (i == meta->num_philos)
+			i = 0;
 	}
-	destroy_philos(meta, meta->num_philos, NULL);
+	destroy_local_sem(meta, meta->num_philos, NULL);
 	return (0);
 }
