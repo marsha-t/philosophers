@@ -18,7 +18,6 @@ int	check_dead(t_philo *philo)
 	if (0 == philo->eating && \
 		time_now_ms() - philo->last_meal >= philo->meta->time_die)
 	{
-		dprintf(2, "%d: died\n", philo->id);
 		sem_post(philo->meal_sem);
 		print_status(RED "is dead" RESET, philo);
 		sem_wait(philo->end_sem);

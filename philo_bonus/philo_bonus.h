@@ -75,8 +75,8 @@ typedef struct s_meta
 	pid_t				*philo_pids;
 	sem_t				*forks;
 	sem_t				*print_sem;
-	sem_t				*end_sem;
-	sem_t				*meal_sem;
+	// sem_t				*end_sem;
+	// sem_t				*meal_sem;
 }						t_meta;
 
 typedef struct s_philo

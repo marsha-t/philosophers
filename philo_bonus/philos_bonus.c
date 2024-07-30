@@ -36,12 +36,21 @@ int	eating(t_philo *philo)
 {
 	sem_wait(philo->forks);
 	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
-		return (drop_forks(1, philo), 1);
+	{
+		exit (PHILO_DEAD);
+		// return (drop_forks(1, philo), 1);
+	}
 	sem_wait(philo->forks);
 	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
-		return (drop_forks(2, philo), 1);
+	{
+		exit (PHILO_DEAD);
+		// return (drop_forks(2, philo), 1);
+	}
 	if (print_status(GREEN "is eating" RESET, philo) == 1)
+	{
+		exit (PHILO_DEAD);
 		return (drop_forks(2, philo), 1);
+	}
 	sem_wait(philo->meal_sem);
 	philo->last_meal = time_now_ms();
 	philo->eating = 1;
