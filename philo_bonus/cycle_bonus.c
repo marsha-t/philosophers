@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 06:14:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 13:11:42 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/30 15:18:27 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int	stop(t_meta *meta)
 	num_philo_full = 0;
 	while (1)
 	{
-		if (waitpid(meta->philo_pids[i], &status, WNOHANG) != 0)
+		if (waitpid(meta->philo_pids[i], &status, WNOHANG) > 0)
 		{
 			if (WIFEXITED(status))
 			{
@@ -83,6 +83,7 @@ int	stop(t_meta *meta)
 					num_philo_full++;
 					if (num_philo_full == meta->num_philos)
 					{
+						// kill_philos(meta);
 						break ;
 					}
 				}

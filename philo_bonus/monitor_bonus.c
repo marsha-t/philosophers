@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 05:22:30 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 13:04:22 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/30 15:10:14 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,12 @@
 
 int	check_dead(t_philo *philo)
 {
+	// new
+	sem_wait(philo->end_sem); 
+	if (philo->end_cycle == 1)
+		return (sem_post(philo->end_sem), 1);
+	sem_post(philo->end_sem);
+	// end new
 	sem_wait(philo->meal_sem);
 	if (0 == philo->eating && \
 		time_now_ms() - philo->last_meal >= philo->meta->time_die)
