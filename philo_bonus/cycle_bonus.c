@@ -29,6 +29,7 @@ int	start(t_meta *meta)
 		i++;
 	}
 	i = 0;
+	sem_wait(meta->end_global);
 	while (i < meta->num_philos)
 	{
 		pid = fork();
@@ -62,42 +63,52 @@ int	kill_philos(t_meta *meta)
 /*	stop 'stops' cycle of eating, sleeping and thinking
 	- main process waits for all philosopher processes
 	 */
+// int	stop(t_meta *meta)
+// {
+// 	int	i;
+// 	int	status;
+// 	int	exit_status;
+// 	int	num_philo_full;
+
+// 	i = 0;
+// 	num_philo_full = 0;
+// 	while (1)
+// 	{
+// 		if (waitpid(meta->philo_pids[i], &status, WNOHANG) > 0)
+// 		{
+// 			if (WIFEXITED(status))
+// 			{
+// 				exit_status = WEXITSTATUS(status);
+// 				if (exit_status == PHILO_FULL)
+// 				{
+// 					num_philo_full++;
+// 					if (num_philo_full == meta->num_philos)
+// 					{
+// 						// kill_philos(meta);
+// 						break ;
+// 					}
+// 				}
+// 				else if (exit_status == PHILO_DEAD)
+// 				{
+// 					kill_philos(meta);
+// 					break ;
+// 				}
+// 			}
+// 		}
+// 		i++;
+// 		if (i == meta->num_philos)
+// 			i = 0;
+// 	}
+// 	destroy_local_sem(meta, meta->num_philos, NULL);
+// 	return (0);
+// }
+
 int	stop(t_meta *meta)
 {
-	int	i;
-	int	status;
-	int	exit_status;
-	int	num_philo_full;
-
-	i = 0;
-	num_philo_full = 0;
-	while (1)
-	{
-		if (waitpid(meta->philo_pids[i], &status, WNOHANG) > 0)
-		{
-			if (WIFEXITED(status))
-			{
-				exit_status = WEXITSTATUS(status);
-				if (exit_status == PHILO_FULL)
-				{
-					num_philo_full++;
-					if (num_philo_full == meta->num_philos)
-					{
-						// kill_philos(meta);
-						break ;
-					}
-				}
-				else if (exit_status == PHILO_DEAD)
-				{
-					kill_philos(meta);
-					break ;
-				}
-			}
-		}
-		i++;
-		if (i == meta->num_philos)
-			i = 0;
-	}
+	sem_wait(meta->end_global);
+	printf("%ld %s\n", time_now_ms() - meta->start_time, \
+			"kill philos\n");
+	kill_philos(meta);	
 	destroy_local_sem(meta, meta->num_philos, NULL);
 	return (0);
 }

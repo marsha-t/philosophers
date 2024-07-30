@@ -16,13 +16,13 @@
 	(but does it locking and unlocking end_mutex) */
 int	quick_check_dead(t_philo *philo)
 {
-	sem_wait(philo->end_sem);
+	sem_wait(philo->end_local);
 	if (1 == philo->end_cycle)
 	{
-		sem_post(philo->end_sem);
+		sem_post(philo->end_local);
 		return (1);
 	}
-	sem_post(philo->end_sem);
+	sem_post(philo->end_local);
 	return (0);
 }
 
@@ -30,15 +30,15 @@ int	quick_check_dead(t_philo *philo)
 	returns 1 if death occurred */
 int	print_status(char *str, t_philo *philo)
 {
-	sem_wait(philo->print_sem);
+	sem_wait(philo->print_global);
 	if (quick_check_dead(philo) != 1)
 	{
 		printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, \
 			philo->id, str);
-		sem_post(philo->print_sem);
+		sem_post(philo->print_global);
 		return (0);
 	}
-	sem_post(philo->print_sem);
+	sem_post(philo->print_global);
 	return (1);
 }
 

@@ -23,6 +23,7 @@ int	main(int argc, char **argv)
 	meta = init_meta(argc, argv);
 	if (!meta)
 		return (1);
+	dprintf(2, "start\n");
 	if (start(meta) != 0)
 		return (1);
 	stop(meta);

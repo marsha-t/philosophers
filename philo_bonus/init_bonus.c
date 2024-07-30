@@ -19,20 +19,25 @@
 	*/
 void	sem_unlink_all(void)
 {
+	int	i;
+	char	*id_str;
+	char	*meal_local_name;
+	char	*end_local_name;
+
 	sem_unlink("/forks");
 	sem_unlink("/print");
 	sem_unlink("/end");
-	int	i;
-	char	*id_str;
-	char	*meal_sem_name;
 	i = 0;
 	while (i < 200)
 	{
 		id_str = ft_itoa(i);
-		meal_sem_name = ft_strjoin("/meal_", id_str);
-		sem_unlink(meal_sem_name);
+		meal_local_name = ft_strjoin("/meal_", id_str);
+		end_local_name = ft_strjoin("/end_", id_str);
+		sem_unlink(meal_local_name);
+		sem_unlink(end_local_name);
 		safe_free(id_str);
-		safe_free(meal_sem_name);
+		safe_free(meal_local_name);
+		safe_free(end_local_name);
 		i++;
 	}
 	errno = 0;
@@ -48,11 +53,11 @@ int	init_sem(t_meta *meta)
 	meta->forks = sem_open("/forks", O_CREAT, 0644, meta->num_philos);
 	if (meta->forks == SEM_FAILED)
 		return (exit_error(ERR_SEM_OPEN, meta), 1);
-	meta->print_sem = sem_open("/print", O_CREAT, 0644, 1);
-	if (meta->print_sem == SEM_FAILED)
+	meta->print_global = sem_open("/print", O_CREAT, 0644, 1);
+	if (meta->print_global == SEM_FAILED)
 		return (destroy_sem(meta, 1, ERR_SEM_OPEN), 1);
-	meta->end_sem = sem_open("/end", O_CREAT, 0644, 1);
-	if (meta->end_sem == SEM_FAILED)
+	meta->end_global = sem_open("/end", O_CREAT, 0644, 1);
+	if (meta->end_global == SEM_FAILED)
 		return (destroy_sem(meta, 2, ERR_SEM_OPEN), 1);
 	return (0);
 }
@@ -75,13 +80,14 @@ t_philo	*init_philo(t_meta *meta, int i)
 	philo->eating = 0;
 	philo->end_cycle = 0;
 	philo->forks = meta->forks;
-	philo->print_sem = meta->print_sem;
-	philo->end_sem = meta->end_sem;
+	philo->print_global = meta->print_global;
+	philo->end_global = meta->end_global;
 	philo->meta = meta;
 	id_str = ft_itoa(i);
-	philo->meal_sem_name = ft_strjoin("/meal_", id_str);
+	philo->meal_local_name = ft_strjoin("/meal_", id_str);
+	philo->end_local_name = ft_strjoin("/end_", id_str);
 	safe_free(id_str);
-	if (!philo->meal_sem_name)
+	if (!philo->meal_local_name)
 		return (free(philo), NULL);
 	return (philo);
 }
@@ -117,9 +123,13 @@ int	init_philo_sem(t_meta *meta)
 	i = 0;
 	while (i < meta->num_philos)
 	{
-		sem_unlink(meta->philos[i]->meal_sem_name);
-		meta->philos[i]->meal_sem = sem_open(meta->philos[i]->meal_sem_name, O_CREAT, 0644, 1);
-		if (meta->philos[i]->meal_sem == SEM_FAILED)
+		sem_unlink(meta->philos[i]->meal_local_name);
+		meta->philos[i]->meal_local = sem_open(meta->philos[i]->meal_local_name, O_CREAT, 0644, 1);
+		if (meta->philos[i]->meal_local == SEM_FAILED)
+			return (destroy_local_sem(meta, i, ERR_SEM_OPEN), 1);
+		sem_unlink(meta->philos[i]->end_local_name);
+		meta->philos[i]->end_local = sem_open(meta->philos[i]->end_local_name, O_CREAT, 0644, 1);
+		if (meta->philos[i]->end_local == SEM_FAILED)
 			return (destroy_local_sem(meta, i, ERR_SEM_OPEN), 1);
 		i++;
 	}

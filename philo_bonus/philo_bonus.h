@@ -74,9 +74,9 @@ typedef struct s_meta
 	t_philo				**philos;
 	pid_t				*philo_pids;
 	sem_t				*forks;
-	sem_t				*print_sem;
-	// sem_t				*end_sem;
-	// sem_t				*meal_sem;
+	sem_t				*print_global;
+	sem_t				*end_global;
+	// sem_t				*meal_global;
 }						t_meta;
 
 typedef struct s_philo
@@ -88,10 +88,13 @@ typedef struct s_philo
 	int					end_cycle;
 	pthread_t			check_end;
 	sem_t		*forks;
-	sem_t		*print_sem;
-	sem_t		*end_sem;
-	char		*meal_sem_name;
-	sem_t		*meal_sem;
+	sem_t		*print_global;
+	sem_t		*end_global;
+
+	char		*end_local_name;
+	sem_t		*end_local;
+	char		*meal_local_name;
+	sem_t		*meal_local;
 	t_meta				*meta;
 }						t_philo;
 

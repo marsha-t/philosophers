@@ -20,8 +20,8 @@ int	single_philo(t_philo *philo)
 	print_status("has taken a fork", philo);
 	usleep_check(philo, philo->meta->time_die);
 	sem_post(philo->forks);
-	// sem_close(philo->meal_sem);
-	// sem_unlink(philo->meal_sem_name);
+	// sem_close(philo->meal_local);
+	// sem_unlink(philo->meal_local_name);
 	// destroy_philos(philo->meta, philo->meta->num_philos, 0);
 	// dprintf(2, "dead\n");
 	return (PHILO_DEAD);

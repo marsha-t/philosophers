@@ -37,46 +37,47 @@ int	eating(t_philo *philo)
 	sem_wait(philo->forks);
 	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
 	{
-		exit (PHILO_DEAD);
-		// return (drop_forks(1, philo), 1);
+		// exit (PHILO_DEAD);
+		return (drop_forks(1, philo), 1);
 	}
 	sem_wait(philo->forks);
 	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
 	{
-		exit (PHILO_DEAD);
-		// return (drop_forks(2, philo), 1);
+		// exit (PHILO_DEAD);
+		return (drop_forks(2, philo), 1);
 	}
 	if (print_status(GREEN "is eating" RESET, philo) == 1)
 	{
-		exit (PHILO_DEAD);
+		// exit (PHILO_DEAD);
 		return (drop_forks(2, philo), 1);
 	}
-	sem_wait(philo->meal_sem);
+	sem_wait(philo->meal_local);
 	philo->last_meal = time_now_ms();
 	philo->eating = 1;
-	sem_post(philo->meal_sem);
+	sem_post(philo->meal_local);
 	if (1 == usleep_check(philo, philo->meta->time_eat))
 	{
 		drop_forks(2, philo);
 		exit (PHILO_DEAD);
+		return (drop_forks(2, philo), 1);
 	}
 
 	drop_forks(2, philo);
-	sem_wait(philo->meal_sem);
+	sem_wait(philo->meal_local);
 	philo->num_meals++;
 	philo->eating = 0;
 	if (philo->meta->min_meals != 0 && philo->num_meals >= philo->meta->min_meals)
 	{
-		sem_post(philo->meal_sem);
-		sem_wait(philo->end_sem);
+		sem_post(philo->meal_local);
+		sem_wait(philo->end_local);
 		philo->end_cycle = 1; 
-		sem_post(philo->end_sem);
+		sem_post(philo->end_local);
 		pthread_join(philo->check_end, NULL);
 		// dprintf(2, "%d: exiting\n", philo->id);
 		destroy_local_sem(philo->meta, philo->meta->num_philos, 0);
 		exit (PHILO_FULL);
 	}
-	sem_post(philo->meal_sem);
+	sem_post(philo->meal_local);
 	return (0);
 }
 
@@ -90,11 +91,13 @@ int	sleeping(t_philo *philo)
 {
 	if (print_status(BLUE "is sleeping" RESET, philo) == 1)
 	{
-		exit (PHILO_DEAD);
+		// exit (PHILO_DEAD);
+		return (1);
 	}
 	if (1 == usleep_check(philo, philo->meta->time_sleep))
 	{
-		exit (PHILO_DEAD);
+		return (1);
+		// exit (PHILO_DEAD);
 	}
 	return (0);
 }
@@ -107,7 +110,8 @@ int	sleeping(t_philo *philo)
 int	thinking(t_philo *philo)
 {
 	if (print_status(MAGENTA "is thinking" RESET, philo) == 1)
-		exit (PHILO_DEAD);
+		return (1);
+		// exit (PHILO_DEAD);
 	return (0);
 }
 
@@ -133,6 +137,10 @@ int	routine(t_meta *meta, int i)
 			if (0 == sleeping(philo))
 				thinking(philo);
 	}
+	sem_post(meta->end_global);
+	printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, \
+			philo->id, "release end_global\n");
+	while (1);
 	// pthread_join(philo->check_end, NULL);
 	exit (0);
 }
