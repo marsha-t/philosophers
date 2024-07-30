@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:37:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/30 14:37:33 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/30 14:58:52 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@
 # include <unistd.h>
 # include <errno.h>
 # include <fcntl.h>
-// # include <sys/stat.h>
 # include <stdarg.h>
 # include <signal.h>
 # include <sys/types.h>
 # include <sys/wait.h>
+
 # define RESET "\x1b[0m"
 # define RED "\x1b[31m"
 # define GREEN "\x1b[32m"

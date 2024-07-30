@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/30 14:49:25 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/30 15:25:39 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,11 @@ int	eating(t_philo *philo)
 	if (philo->meta->min_meals != 0 && philo->num_meals >= philo->meta->min_meals)
 	{
 		sem_post(philo->meal_sem);
+		sem_wait(philo->end_sem);
+		philo->end_cycle = 1; 
+		sem_post(philo->end_sem);
+		pthread_join(philo->check_end, NULL);
+		// dprintf(2, "%d: exiting\n", philo->id);
 		destroy_local_sem(philo->meta, philo->meta->num_philos, 0);
 		exit (PHILO_FULL);
 	}
