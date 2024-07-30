@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 13:05:28 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/30 14:49:25 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,22 +36,29 @@ int	eating(t_philo *philo)
 {
 	sem_wait(philo->forks);
 	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
-		return (drop_forks(1, philo), 1);
+	{
+		drop_forks(1, philo);
+		exit(PHILO_DEAD);
+	}
 	sem_wait(philo->forks);
 	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
-		return (drop_forks(2, philo), 1);
+	{
+		drop_forks(2, philo);
+		exit(PHILO_DEAD);
+	}
 	if (print_status(GREEN "is eating" RESET, philo) == 1)
-		return (drop_forks(2, philo), 1);
+	{
+		drop_forks(2, philo);
+		exit(PHILO_DEAD);
+	}
 	sem_wait(philo->meal_sem);
 	philo->last_meal = time_now_ms();
 	philo->eating = 1;
 	sem_post(philo->meal_sem);
 	if (1 == usleep_check(philo, philo->meta->time_eat))
 	{
-		
 		drop_forks(2, philo);
 		exit (PHILO_DEAD);
-		// return (drop_forks(2, philo), 1);
 	}
 
 	drop_forks(2, philo);
@@ -79,12 +86,10 @@ int	sleeping(t_philo *philo)
 	if (print_status(BLUE "is sleeping" RESET, philo) == 1)
 	{
 		exit (PHILO_DEAD);
-		// return (1);
 	}
 	if (1 == usleep_check(philo, philo->meta->time_sleep))
 	{
 		exit (PHILO_DEAD);
-		// return (1);
 	}
 	return (0);
 }
@@ -98,7 +103,6 @@ int	thinking(t_philo *philo)
 {
 	if (print_status(MAGENTA "is thinking" RESET, philo) == 1)
 		exit (PHILO_DEAD);
-		// return (1);
 	return (0);
 }
 
@@ -124,6 +128,6 @@ int	routine(t_meta *meta, int i)
 			if (0 == sleeping(philo))
 				thinking(philo);
 	}
-	pthread_join(philo->check_end, NULL);
+	// pthread_join(philo->check_end, NULL);
 	exit (0);
 }

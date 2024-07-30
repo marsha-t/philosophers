@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 05:22:30 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 13:04:22 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/30 14:48:51 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ int	check_dead(t_philo *philo)
 	if (0 == philo->eating && \
 		time_now_ms() - philo->last_meal >= philo->meta->time_die)
 	{
-		dprintf(2, "%d: died\n", philo->id);
 		sem_post(philo->meal_sem);
 		print_status(RED "is dead" RESET, philo);
 		sem_wait(philo->end_sem);
