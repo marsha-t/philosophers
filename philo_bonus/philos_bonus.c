@@ -73,6 +73,7 @@ int	eating(t_philo *philo)
 		philo->end_cycle = 1; 
 		sem_post(philo->end_local);
 		pthread_join(philo->check_end, NULL);
+		sem_post(philo->end_global);
 		// dprintf(2, "%d: exiting\n", philo->id);
 		destroy_local_sem(philo->meta, philo->meta->num_philos, 0);
 		exit (PHILO_FULL);

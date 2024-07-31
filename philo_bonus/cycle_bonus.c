@@ -105,9 +105,33 @@ int	kill_philos(t_meta *meta)
 
 int	stop(t_meta *meta)
 {
-	sem_wait(meta->end_global);
-	printf("%ld %s\n", time_now_ms() - meta->start_time, \
-			"kill philos\n");
+	int j;
+	int i = 0;
+	int	rval;
+	int	undead;
+	int full;
+
+	undead = 0;
+	full = 0;
+
+	while (i < meta->num_philos)
+	{
+		sem_wait(meta->end_global);
+		j = 0;
+		while (j < meta->num_philos)
+		{
+			rval = waitpid(meta->philo_pids[i], NULL, WNOHANG);
+			if (rval == 0)
+				undead++;
+			else 
+				full++;
+			j++;
+		}
+		if (undead == meta->num_philos - full)
+			break;
+	}
+	// printf("%ld %s\n", time_now_ms() - meta->start_time, \
+	// 		"kill philos\n");
 	kill_philos(meta);	
 	destroy_local_sem(meta, meta->num_philos, NULL);
 	return (0);
