@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:37:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/24 11:55:24 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/31 14:01:51 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,9 @@ void					*single_philo(t_philo *philo);
 
 /* Utility functions: utils.c */
 int						quick_check_dead(t_philo *philo);
-int						print_status(char *str, t_philo *philo);
+int						print_status(char *str, t_philo *philo, int death);
+// int						print_status(char *str, t_philo *philo);
+
 int						usleep_check(t_philo *philo, time_t ms);
 time_t					time_now_ms(void);
 

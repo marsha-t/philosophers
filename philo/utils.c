@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 05:44:24 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/24 11:55:17 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/31 14:01:35 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,20 @@ int	quick_check_dead(t_philo *philo)
 
 /*	print_status prints the status of a given philo
 	returns 1 if death occurred */
-int	print_status(char *str, t_philo *philo)
+int	print_status(char *str, t_philo *philo, int death)
 {
 	pthread_mutex_lock(philo->print_mutex);
-	if (quick_check_dead(philo) != 1)
+	// if (quick_check_dead(philo) != 1)
+	// {
+	printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, \
+		philo->id, str);
+	if (death == 0)
 	{
-		printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, \
-			philo->id, str);
 		pthread_mutex_unlock(philo->print_mutex);
 		return (0);
 	}
-	pthread_mutex_unlock(philo->print_mutex);
+	// }
+	// pthread_mutex_unlock(philo->print_mutex);
 	return (1);
 }
 
@@ -50,11 +53,12 @@ int	usleep_check(t_philo *philo, time_t ms)
 	time_t	start;
 
 	start = time_now_ms();
+	(void)philo;
 	while (time_now_ms() - start < ms)
 	{
-		if (1 == quick_check_dead(philo))
-			return (1);
-		usleep(100);
+		// if (1 == quick_check_dead(philo))
+		// 	return (1);
+		usleep(60);
 	}
 	return (0);
 }

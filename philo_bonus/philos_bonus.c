@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/30 15:25:39 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/31 13:39:41 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,22 +35,13 @@ void	drop_forks(int i, t_philo *philo)
 int	eating(t_philo *philo)
 {
 	sem_wait(philo->forks);
-	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
-	{
-		// exit (PHILO_DEAD);
+	if (print_status(YELLOW "has taken a fork" RESET, philo, 0) == 1)
 		return (drop_forks(1, philo), 1);
-	}
 	sem_wait(philo->forks);
-	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
-	{
-		// exit (PHILO_DEAD);
+	if (print_status(YELLOW "has taken a fork" RESET, philo, 0) == 1)
 		return (drop_forks(2, philo), 1);
-	}
-	if (print_status(GREEN "is eating" RESET, philo) == 1)
-	{
-		// exit (PHILO_DEAD);
+	if (print_status(GREEN "is eating" RESET, philo, 0) == 1)
 		return (drop_forks(2, philo), 1);
-	}
 	sem_wait(philo->meal_local);
 	philo->last_meal = time_now_ms();
 	philo->eating = 1;
@@ -61,7 +52,6 @@ int	eating(t_philo *philo)
 		exit (PHILO_DEAD);
 		return (drop_forks(2, philo), 1);
 	}
-
 	drop_forks(2, philo);
 	sem_wait(philo->meal_local);
 	philo->num_meals++;
@@ -72,11 +62,13 @@ int	eating(t_philo *philo)
 		sem_wait(philo->end_local);
 		philo->end_cycle = 1; 
 		sem_post(philo->end_local);
-		pthread_join(philo->check_end, NULL);
+		// pthread_join(philo->check_end, NULL);
 		sem_post(philo->end_global);
-		// dprintf(2, "%d: exiting\n", philo->id);
-		destroy_local_sem(philo->meta, philo->meta->num_philos, 0);
-		exit (PHILO_FULL);
+		while (1) // use a sem_wait to keep processes open
+		{
+		}
+		// destroy_local_sem(philo->meta, philo->meta->num_philos, 0); // fix cleanup
+		// exit (PHILO_FULL);
 	}
 	sem_post(philo->meal_local);
 	return (0);
@@ -90,15 +82,13 @@ int	eating(t_philo *philo)
 		when printing status or sleeping */
 int	sleeping(t_philo *philo)
 {
-	if (print_status(BLUE "is sleeping" RESET, philo) == 1)
+	if (print_status(BLUE "is sleeping" RESET, philo, 0) == 1)
 	{
-		// exit (PHILO_DEAD);
 		return (1);
 	}
 	if (1 == usleep_check(philo, philo->meta->time_sleep))
 	{
 		return (1);
-		// exit (PHILO_DEAD);
 	}
 	return (0);
 }
@@ -110,9 +100,8 @@ int	sleeping(t_philo *philo)
 */
 int	thinking(t_philo *philo)
 {
-	if (print_status(MAGENTA "is thinking" RESET, philo) == 1)
+	if (print_status(MAGENTA "is thinking" RESET, philo, 0) == 1)
 		return (1);
-		// exit (PHILO_DEAD);
 	return (0);
 }
 
@@ -138,7 +127,7 @@ int	routine(t_meta *meta, int i)
 			if (0 == sleeping(philo))
 				thinking(philo);
 	}
-	sem_post(meta->end_global);
+	// sem_post(meta->end_global);
 	printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, \
 			philo->id, "release end_global\n");
 	while (1);

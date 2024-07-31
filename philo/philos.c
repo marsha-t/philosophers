@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philos_cycle.c                                     :+:      :+:    :+:   */
+/*   philos.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/24 12:33:02 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/31 14:13:10 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,12 @@ void	unlock_forks(int i, t_philo *philo)
 int	eating(t_philo *philo)
 {
 	pthread_mutex_lock(philo->fork_l);
-	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
+	if (print_status(YELLOW "has taken a fork" RESET, philo, 0) == 1)
 		return (unlock_forks(1, philo), 1);
 	pthread_mutex_lock(philo->fork_r);
-	if (print_status(YELLOW "has taken a fork" RESET, philo) == 1)
+	if (print_status(YELLOW "has taken a fork" RESET, philo, 0) == 1)
 		return (unlock_forks(2, philo), 1);
-	if (print_status(GREEN "is eating" RESET, philo) == 1)
+	if (print_status(GREEN "is eating" RESET, philo, 0) == 1)
 		return (unlock_forks(2, philo), 1);
 	pthread_mutex_lock(philo->last_meal_mutex);
 	philo->last_meal = time_now_ms();
@@ -65,7 +65,7 @@ int	eating(t_philo *philo)
 		when printing status or sleeping */
 int	sleeping(t_philo *philo)
 {
-	if (print_status(BLUE "is sleeping" RESET, philo) == 1)
+	if (print_status(BLUE "is sleeping" RESET, philo, 0) == 1)
 		return (1);
 	if (1 == usleep_check(philo, philo->meta->time_sleep))
 		return (1);
@@ -79,7 +79,7 @@ int	sleeping(t_philo *philo)
 */
 int	thinking(t_philo *philo)
 {
-	if (print_status(MAGENTA "is thinking" RESET, philo) == 1)
+	if (print_status(MAGENTA "is thinking" RESET, philo, 0) == 1)
 		return (1);
 	return (0);
 }
@@ -95,8 +95,10 @@ void	*routine(void *arg)
 	if (1 == philo->meta->num_philos)
 		return (single_philo(philo));
 	else if (0 == philo->id % 2)
-		usleep(1000);
-	while (0 == quick_check_dead(philo))
+		// usleep(philo->meta->time_eat/2);
+		// usleep(60);
+	// while (0 == quick_check_dead(philo))
+	while (1)
 	{
 		if (0 == eating(philo))
 			if (0 == sleeping(philo))

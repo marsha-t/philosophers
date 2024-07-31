@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 05:22:30 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/24 11:55:01 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/31 14:00:30 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	check_any_dead(t_meta *meta)
 			time_now_ms() - meta->philos[i]->last_meal >= meta->time_die)
 		{
 			pthread_mutex_unlock(&meta->last_meal_mutex);
-			print_status(RED "is dead" RESET, meta->philos[i]);
+			print_status(RED "is dead" RESET, meta->philos[i], 1);
 			pthread_mutex_lock(&meta->end_mutex);
 			meta->end_cycle = 1;
 			pthread_mutex_unlock(&meta->end_mutex);

@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:45:06 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/30 14:55:08 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/31 10:40:45 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ int	main(int argc, char **argv)
 	meta = init_meta(argc, argv);
 	if (!meta)
 		return (1);
-	dprintf(2, "start\n");
 	if (start(meta) != 0)
 		return (1);
 	stop(meta);

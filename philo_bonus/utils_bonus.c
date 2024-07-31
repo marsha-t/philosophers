@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 05:44:24 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/30 14:49:43 by mateo            ###   ########.fr       */
+/*   Updated: 2024/07/31 11:57:16 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,15 @@ int	quick_check_dead(t_philo *philo)
 
 /*	print_status prints the status of a given philo
 	returns 1 if death occurred */
-int	print_status(char *str, t_philo *philo)
+int	print_status(char *str, t_philo *philo, int death)
 {
 	sem_wait(philo->print_global);
 	if (quick_check_dead(philo) != 1)
 	{
 		printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, \
 			philo->id, str);
-		sem_post(philo->print_global);
+		if (death == 0)
+			sem_post(philo->print_global);
 		return (0);
 	}
 	sem_post(philo->print_global);
