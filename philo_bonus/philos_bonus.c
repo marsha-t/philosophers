@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/01 14:27:08 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/01 15:15:14 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	drop_forks(int i, t_philo *philo)
 		when printing status or eating
 */
 int	eating(t_philo *philo)
-{π
+{
 	sem_wait(philo->forks);
 	print_status(YELLOW "has taken a fork" RESET, philo, 0);
 	sem_wait(philo->forks);

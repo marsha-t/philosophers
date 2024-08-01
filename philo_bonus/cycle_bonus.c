@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 06:14:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/01 13:28:46 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/01 15:17:26 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	start(t_meta *meta)
 	int	i;
 	pid_t	pid;
 
-	meta->start_time = time_now_ms() + (meta->num_philos * 30);
+	meta->start_time = time_now_ms() + (meta->num_philos * 20);
 	// dprintf(2, "now: %ld, start: %ld\n", time_now_ms(), meta->start_time);
 	// dprintf(2, "die: %ld, eat: %ld, sleep: %ld\n", meta->time_die, meta->time_eat, meta->time_sleep);
 	i = 0;
