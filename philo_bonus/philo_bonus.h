@@ -91,8 +91,8 @@ typedef struct s_philo
 	sem_t		*print_global;
 	sem_t		*end_global;
 
-	char		*end_local_name;
-	sem_t		*end_local;
+	// char		*end_local_name;
+	// sem_t		*end_local;
 	char		*meal_local_name;
 	sem_t		*meal_local;
 	t_meta				*meta;

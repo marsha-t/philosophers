@@ -21,8 +21,8 @@ void	destroy_local_sem(t_meta *meta, int nth_philo, char *str)
 	{
 		sem_close(meta->philos[i]->meal_local);
 		sem_unlink(meta->philos[i]->meal_local_name);
-		sem_close(meta->philos[i]->end_local);
-		sem_unlink(meta->philos[i]->end_local_name);
+		// sem_close(meta->philos[i]->end_local);
+		// sem_unlink(meta->philos[i]->end_local_name);
 		i++;
 	}
 	destroy_philos(meta, meta->num_philos, str);
@@ -40,7 +40,7 @@ void	destroy_philos(t_meta *meta, int nth_philo, char *str)
 	while (i < nth_philo)
 	{
 		safe_free(meta->philos[i]->meal_local_name);
-		safe_free(meta->philos[i]->end_local_name);
+		// safe_free(meta->philos[i]->end_local_name);
 		safe_free(meta->philos[i]);
 		i++;
 	}

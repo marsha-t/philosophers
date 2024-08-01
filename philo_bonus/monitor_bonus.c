@@ -15,20 +15,22 @@
 int	check_dead(t_philo *philo)
 {
 	// new
-	sem_wait(philo->end_local); 
-	if (philo->end_cycle == 1)
-		return (sem_post(philo->end_local), 1);
-	sem_post(philo->end_local);
+	// sem_wait(philo->end_local); 
+	// if (philo->end_cycle == 1)
+	// 	return (sem_post(philo->end_local), 1);
+	// sem_post(philo->end_local);
 	// end new
 	sem_wait(philo->meal_local);
-	if (0 == philo->eating && \
-		time_now_ms() - philo->last_meal >= philo->meta->time_die)
+	time_t time_now = time_now_ms() ;
+	// if (0 == philo->eating && time_now_ms() - philo->last_meal >= philo->meta->time_die)
+	if (0 == philo->eating && time_now - philo->last_meal >= philo->meta->time_die)
 	{
+		dprintf(2, "%d: time_now: %ld, last_meal: %ld, difference: %ld\n", philo->id, time_now, philo->last_meal, time_now-philo->last_meal);
 		sem_post(philo->meal_local);
 		print_status(RED "is dead" RESET, philo, 1);
-		sem_wait(philo->end_local);
-		philo->end_cycle = 1;
-		sem_post(philo->end_local);
+		// sem_wait(philo->end_local);
+		// philo->end_cycle = 1;
+		// sem_post(philo->end_local);
 		int i = 0;
 		while (i < philo->meta->num_philos)
 		{

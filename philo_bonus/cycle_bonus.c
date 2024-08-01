@@ -21,7 +21,9 @@ int	start(t_meta *meta)
 	int	i;
 	pid_t	pid;
 
-	meta->start_time = time_now_ms();
+	meta->start_time = time_now_ms() + (meta->num_philos * 100);
+	dprintf(2, "now: %ld, start: %ld\n", time_now_ms(), meta->start_time);
+	dprintf(2, "die: %ld, eat: %ld, sleep: %ld\n", meta->time_die, meta->time_eat, meta->time_sleep);
 	i = 0;
 	while (i < meta->num_philos)
 	{
@@ -36,14 +38,12 @@ int	start(t_meta *meta)
 		if (pid == -1)
 			return (1); // add error function
 		else if (pid == 0)
-		{
 			routine(meta, i);
-			exit (0);
-		}
 		else
 			meta->philo_pids[i] = pid;
 		i++;
 	}
+	dprintf(2, "\n%ld: FORKED\n", time_now_ms());
 	return (0);
 }
 

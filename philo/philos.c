@@ -95,8 +95,9 @@ void	*routine(void *arg)
 	if (1 == philo->meta->num_philos)
 		return (single_philo(philo));
 	else if (0 == philo->id % 2)
-		// usleep(philo->meta->time_eat/2);
+		usleep(philo->meta->time_eat * 1000 /2);
 		// usleep(60);
+		
 	// while (0 == quick_check_dead(philo))
 	while (1)
 	{

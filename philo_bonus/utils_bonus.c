@@ -14,32 +14,45 @@
 
 /*	quick_check_dead returns value of philo->end_cycle
 	(but does it locking and unlocking end_mutex) */
-int	quick_check_dead(t_philo *philo)
-{
-	sem_wait(philo->end_local);
-	if (1 == philo->end_cycle)
-	{
-		sem_post(philo->end_local);
-		return (1);
-	}
-	sem_post(philo->end_local);
-	return (0);
-}
+// int	quick_check_dead(t_philo *philo)
+// {
+// 	sem_wait(philo->end_local);
+// 	if (1 == philo->end_cycle)
+// 	{
+// 		sem_post(philo->end_local);
+// 		return (1);
+// 	}
+// 	sem_post(philo->end_local);
+// 	return (0);
+// }
 
 /*	print_status prints the status of a given philo
 	returns 1 if death occurred */
 int	print_status(char *str, t_philo *philo, int death)
 {
+	// time_t time_now;
+
 	sem_wait(philo->print_global);
-	if (quick_check_dead(philo) != 1)
+	// if (quick_check_dead(philo) != 1)
+	// {
+	// 	time_now = time_now_ms();
+	// 	printf("%ld %d %s (timenow: %ld, start_time: %ld) \n", time_now - philo->meta->start_time, philo->id, str, time_now, philo->meta->start_time);
+		
+	// 	// printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, philo->id, str);
+	// 	if (death == 0)
+	// 		sem_post(philo->print_global);
+	// 	return (0);
+	// }
+
+	// time_now = time_now_ms();
+	// printf("%ld %d %s (timenow: %ld, start_time: %ld) \n", time_now - philo->meta->start_time, philo->id, str, time_now, philo->meta->start_time);
+	printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, philo->id, str);
+	if (death == 0)
 	{
-		printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, \
-			philo->id, str);
-		if (death == 0)
-			sem_post(philo->print_global);
+		sem_post(philo->print_global);
 		return (0);
 	}
-	sem_post(philo->print_global);
+	// sem_post(philo->print_global);
 	return (1);
 }
 
@@ -53,8 +66,9 @@ int	usleep_check(t_philo *philo, time_t ms)
 	start = time_now_ms();
 	while (time_now_ms() - start < ms)
 	{
-		if (1 == quick_check_dead(philo))
-			return (1);
+		(void)philo;
+		// if (1 == quick_check_dead(philo))
+		// 	return (1);
 		usleep(100);
 	}
 	return (0);
