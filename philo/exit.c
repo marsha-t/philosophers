@@ -96,11 +96,3 @@ void	exit_error(char *msg, t_meta *meta)
 	if (meta)
 		safe_free(meta);
 }
-
-/*	safe_free frees the pointer to allocated memory and
-	sets the pointer to null */
-void	safe_free(void *memory)
-{
-	free(memory);
-	memory = 0;
-}

@@ -106,7 +106,6 @@ void					destroy_mutexes(t_meta *meta, int num_mutexes,
 void					destroy_philos(t_meta *meta, int nth_philo, char *str);
 void					destroy_forks(t_meta *meta, int nth_fork, char *str);
 void					exit_error(char *msg, t_meta *meta);
-void					safe_free(void *memory);
 
 /* Functions for monitor thread: monitor.c */
 int						check_any_dead(t_meta *meta);
@@ -130,9 +129,8 @@ void					*single_philo(t_philo *philo);
 /* Utility functions: utils.c */
 int						quick_check_dead(t_philo *philo);
 int						print_status(char *str, t_philo *philo, int death);
-// int						print_status(char *str, t_philo *philo);
-
 int						usleep_check(t_philo *philo, time_t ms);
 time_t					time_now_ms(void);
+void					safe_free(void *memory);
 
 #endif

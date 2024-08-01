@@ -33,13 +33,10 @@ int	print_status(char *str, t_philo *philo, int death)
 	pthread_mutex_lock(philo->print_mutex);
 	if (quick_check_dead(philo) != 1)
 	{
-	printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, \
-		philo->id, str);
-	if (death == 0)
-	{
+		printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, \
+			philo->id, str);
 		pthread_mutex_unlock(philo->print_mutex);
 		return (0);
-	}
 	}
 	pthread_mutex_unlock(philo->print_mutex);
 	return (1);
@@ -53,7 +50,6 @@ int	usleep_check(t_philo *philo, time_t ms)
 	time_t	start;
 
 	start = time_now_ms();
-	// (void)philo;
 	while (time_now_ms() - start < ms)
 	{
 		if (1 == quick_check_dead(philo))
@@ -70,4 +66,12 @@ time_t	time_now_ms(void)
 
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+/*	safe_free frees the pointer to allocated memory and
+	sets the pointer to null */
+void	safe_free(void *memory)
+{
+	free(memory);
+	memory = 0;
 }
