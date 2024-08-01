@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/01 13:59:21 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/01 14:27:08 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,16 +34,15 @@ void	drop_forks(int i, t_philo *philo)
 		when printing status or eating
 */
 int	eating(t_philo *philo)
-{
+{π
 	sem_wait(philo->forks);
 	print_status(YELLOW "has taken a fork" RESET, philo, 0);
 	sem_wait(philo->forks);
 	print_status(YELLOW "has taken a fork" RESET, philo, 0);
 	print_status(GREEN "is eating" RESET, philo, 0);
 	sem_wait(philo->meal_local);
-	philo->last_meal = time_now_ms();
-	// philo->end_eat = philo->last_meal + philo->meta->time_eat;
-	// philo->end_sleep = philo->end_eat + philo->meta->time_sleep;
+	philo->last_meal = philo->last_status;
+	// philo->last_meal = time_now_ms();
 	philo->eating = 1;
 	// dprintf(2, "%d->last_meal: %ld\n", philo->id, philo->last_meal);
 	// usleep_check(philo, philo->meta->time_eat);

@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:37:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/01 13:40:33 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/01 14:25:58 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ typedef struct s_philo
 	int					id;
 	int					num_meals;
 	time_t				last_meal;
+	time_t			last_status;
 	// time_t				end_eat;
 	// time_t				end_sleep;
 	// time_t				end_think;

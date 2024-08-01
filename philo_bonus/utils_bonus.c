@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 05:44:24 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/31 11:57:16 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/01 14:25:10 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,9 @@ int	print_status(char *str, t_philo *philo, int death)
 
 	// time_now = time_now_ms();
 	// printf("%ld %d %s (timenow: %ld, start_time: %ld) \n", time_now - philo->meta->start_time, philo->id, str, time_now, philo->meta->start_time);
-	printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, philo->id, str);
+	philo->last_status = time_now_ms();
+	printf("%ld %d %s\n", philo->last_status - philo->meta->start_time, philo->id, str);
+	// printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, philo->id, str);
 	if (death == 0)
 	{
 		sem_post(philo->print_global);
