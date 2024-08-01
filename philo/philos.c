@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/31 14:13:10 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/01 15:09:05 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,10 +96,7 @@ void	*routine(void *arg)
 		return (single_philo(philo));
 	else if (0 == philo->id % 2)
 		usleep(philo->meta->time_eat * 1000 /2);
-		// usleep(60);
-		
-	// while (0 == quick_check_dead(philo))
-	while (1)
+	while (0 == quick_check_dead(philo))
 	{
 		if (0 == eating(philo))
 			if (0 == sleeping(philo))
