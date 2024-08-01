@@ -40,8 +40,9 @@ void	*monitor(void *arg)
 	philo = (t_philo *)arg;
 	while (1)
 	{
-		if (1 == check_dead(philo))
-			break ;
+		check_dead(philo);
+		// if (1 == check_dead(philo)) // try without
+			// break ;
 		usleep(500);
 	}
 	return (NULL);

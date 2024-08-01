@@ -53,7 +53,7 @@ void	eating(t_philo *philo)
 	philo->eating = 0;
 	if (philo->meta->min_meals != 0 && philo->num_meals >= philo->meta->min_meals)
 	{
-		sem_post(philo->meal_local);
+		// sem_post(philo->meal_local); // meal_local is left locked so thread cannot check death
 		sem_post(philo->end_global);
 		while (1)
 		{

@@ -22,7 +22,6 @@ void	sem_unlink_all(void)
 	int	i;
 	char	*id_str;
 	char	*meal_local_name;
-	// char	*end_local_name;
 
 	sem_unlink("/forks");
 	sem_unlink("/print");
@@ -32,12 +31,9 @@ void	sem_unlink_all(void)
 	{
 		id_str = ft_itoa(i);
 		meal_local_name = ft_strjoin("/meal_", id_str);
-		// end_local_name = ft_strjoin("/end_", id_str);
 		sem_unlink(meal_local_name);
-		// sem_unlink(end_local_name);
 		safe_free(id_str);
 		safe_free(meal_local_name);
-		// safe_free(end_local_name);
 		i++;
 	}
 	errno = 0;
@@ -127,10 +123,6 @@ int	init_philo_sem(t_meta *meta)
 		meta->philos[i]->meal_local = sem_open(meta->philos[i]->meal_local_name, O_CREAT, 0644, 1);
 		if (meta->philos[i]->meal_local == SEM_FAILED)
 			return (destroy_local_sem(meta, i, ERR_SEM_OPEN), 1);
-		// sem_unlink(meta->philos[i]->end_local_name);
-		// meta->philos[i]->end_local = sem_open(meta->philos[i]->end_local_name, O_CREAT, 0644, 1);
-		// if (meta->philos[i]->end_local == SEM_FAILED)
-			// return (destroy_local_sem(meta, i, ERR_SEM_OPEN), 1);
 		i++;
 	}
 	return (0);

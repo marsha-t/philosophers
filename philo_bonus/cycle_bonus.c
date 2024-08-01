@@ -34,7 +34,7 @@ int	start(t_meta *meta)
 	{
 		pid = fork();
 		if (pid == -1)
-			return (1); // add error function
+			return (1); // add error function: kill philos up until i and then destroy local sem
 		else if (pid == 0)
 			routine(meta, i);
 		else
@@ -62,8 +62,9 @@ int	kill_philos(t_meta *meta)
 	 */
 int	stop(t_meta *meta)
 {
-	int i = 0;
+	int	i;
 
+	i = 0;
 	while (i < meta->num_philos)
 	{
 		sem_wait(meta->end_global);

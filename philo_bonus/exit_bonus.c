@@ -12,17 +12,19 @@
 
 #include "philo_bonus.h"
 
-//WIP: whether can lump end and meal closing at the same time; what happens in sem_close if doesn't exist 
+/*	destroy_local_sem closes and unlinks the meal_local sem for each philo 
+	then calls destroy_philos() 
+	- nth_philo is where there's an error opening meal_local sem 
+*/
 void	destroy_local_sem(t_meta *meta, int nth_philo, char *str)
 {
 	int	i;
+
 	i = 0;
 	while (i < nth_philo)
 	{
 		sem_close(meta->philos[i]->meal_local);
 		sem_unlink(meta->philos[i]->meal_local_name);
-		// sem_close(meta->philos[i]->end_local);
-		// sem_unlink(meta->philos[i]->end_local_name);
 		i++;
 	}
 	destroy_philos(meta, meta->num_philos, str);
@@ -40,7 +42,6 @@ void	destroy_philos(t_meta *meta, int nth_philo, char *str)
 	while (i < nth_philo)
 	{
 		safe_free(meta->philos[i]->meal_local_name);
-		// safe_free(meta->philos[i]->end_local_name);
 		safe_free(meta->philos[i]);
 		i++;
 	}
