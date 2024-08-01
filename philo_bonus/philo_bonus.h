@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:37:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/01 14:25:58 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/01 15:33:25 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ typedef struct s_meta
 	sem_t				*forks;
 	sem_t				*print_global;
 	sem_t				*end_global;
-	// sem_t				*meal_global;
 }						t_meta;
 
 typedef struct s_philo
@@ -94,9 +93,6 @@ typedef struct s_philo
 	sem_t		*forks;
 	sem_t		*print_global;
 	sem_t		*end_global;
-
-	// char		*end_local_name;
-	// sem_t		*end_local;
 	char		*meal_local_name;
 	sem_t		*meal_local;
 	t_meta				*meta;
@@ -131,10 +127,10 @@ void	*monitor(void *arg);
 
 /* Functions for philosophers: philos_bonus.c */
 void	drop_forks(int i, t_philo *philo);
-int	eating(t_philo *philo);
-int	sleeping(t_philo *philo);
-int	thinking(t_philo *philo);
-int	routine(t_meta *meta, int i);
+void	eating(t_philo *philo);
+void	sleeping(t_philo *philo);
+void	thinking(t_philo *philo);
+void	routine(t_meta *meta, int i);
 
 /* Starting and stopping cycle: cycle_bonus.c */
 int	start(t_meta *meta);
@@ -145,7 +141,6 @@ int	single_philo(t_philo *philo);
 
 /* Utility functions: utils_bonus.c */
 int	quick_check_dead(t_philo *philo);
-// int	print_status(char *str, t_philo *philo);
 int	print_status(char *str, t_philo *philo, int death);
 
 int	usleep_check(t_philo *philo, time_t ms);
