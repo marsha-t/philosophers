@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 11:46:29 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/31 11:58:55 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/05 13:24:32 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,5 +20,5 @@ int	single_philo(t_philo *philo)
 	print_status("has taken a fork", philo, 0);
 	usleep_check(philo, philo->meta->time_die);
 	sem_post(philo->forks);
-	return (PHILO_DEAD);
+	return (1);
 }

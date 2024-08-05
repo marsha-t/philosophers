@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 05:44:24 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/01 15:08:27 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/05 12:53:38 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	quick_check_dead(t_philo *philo)
 
 /*	print_status prints the status of a given philo
 	returns 1 if death occurred */
-int	print_status(char *str, t_philo *philo, int death)
+int	print_status(char *str, t_philo *philo)
 {
 	pthread_mutex_lock(philo->print_mutex);
 	if (quick_check_dead(philo) != 1)

@@ -6,15 +6,24 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 06:42:33 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 12:22:11 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/05 13:28:17 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
+/*	destroy_philo_process kills nth_philo - 1 child processes
+	then calls destroy_local_sem() 
+	- nth_philo is where there's error calling fork() */
+void	destroy_philo_process(t_meta *meta, int nth_philo, char *str)
+{
+	kill_philos(meta, nth_philo);
+	destroy_local_sem(meta, meta->num_philos, str);
+}
+
 /*	destroy_local_sem closes and unlinks the meal_local sem for each philo 
 	then calls destroy_philos() 
-	- nth_philo is where there's an error opening meal_local sem 
+	- nth_philo is where there's an error opening meal_local sem
 */
 void	destroy_local_sem(t_meta *meta, int nth_philo, char *str)
 {
@@ -78,12 +87,4 @@ void	exit_error(char *msg, t_meta *meta)
 			safe_free(meta->philo_pids);
 		safe_free(meta);
 	}
-}
-
-/*	safe_free frees the pointer to allocated memory and
-	sets the pointer to null */
-void	safe_free(void *memory)
-{
-	free(memory);
-	memory = 0;
 }

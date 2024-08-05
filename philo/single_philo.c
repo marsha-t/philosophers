@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 11:46:29 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/31 14:02:06 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/05 12:54:12 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void	*single_philo(t_philo *philo)
 {
 	pthread_mutex_lock(philo->fork_l);
-	print_status("has taken a fork", philo, 0);
+	print_status("has taken a fork", philo);
 	usleep_check(philo, philo->meta->time_die);
 	pthread_mutex_unlock(philo->fork_l);
 	return (NULL);

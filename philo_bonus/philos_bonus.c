@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/01 15:42:50 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/05 13:27:46 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,15 @@ void	eating(t_philo *philo)
 	sem_wait(philo->meal_local);
 	philo->last_meal = philo->last_status;
 	philo->eating = 1;
-	// while (time_now_ms() < philo->last_meal + philo->meta->time_eat)
-	// 	usleep(100);
 	sem_post(philo->meal_local);
 	usleep_check(philo, philo->meta->time_eat);
 	drop_forks(2, philo);
 	sem_wait(philo->meal_local);
 	philo->num_meals++;
 	philo->eating = 0;
-	if (philo->meta->min_meals != 0 && philo->num_meals >= philo->meta->min_meals)
+	if (philo->meta->min_meals != 0 && \
+		philo->num_meals >= philo->meta->min_meals)
 	{
-		// sem_post(philo->meal_local); // meal_local is left locked so thread cannot check death
 		sem_post(philo->end_global);
 		while (1)
 		{
@@ -71,12 +69,7 @@ void	eating(t_philo *philo)
 void	sleeping(t_philo *philo)
 {
 	print_status(BLUE "is sleeping" RESET, philo, 0);
-	
 	usleep_check(philo, philo->meta->time_sleep);
-	// sem_wait(philo->meal_local);
-	// while (time_now_ms() < philo->last_meal + philo->meta->time_eat + philo->meta->time_sleep)
-	// 	usleep(100);
-	// sem_post(philo->meal_local);
 }
 
 /*	thinking 
@@ -86,24 +79,8 @@ void	sleeping(t_philo *philo)
 */
 void	thinking(t_philo *philo)
 {
-
 	print_status(MAGENTA "is thinking" RESET, philo, 0);
-	
-	// time_t	time_to_think;
-	// sem_wait(philo->meal_local);
-	// time_to_think = (philo->meta->time_die 	- (time_now_ms() - philo->last_meal) - philo->meta->time_eat) / 2;
-	// sem_post(philo->meal_local);
-	// if (time_to_think < 0)
-	// 	time_to_think = 0;
-	// if (time_to_think > 600)
-	// 	time_to_think = 200;
-	// print_status(MAGENTA "is thinking" RESET, philo, 0);
-	// sem_wait(philo->meal_local);
-	// while (time_now_ms() < philo->last_meal + philo->meta->time_eat + philo->meta->time_sleep + time_to_think)
-	// 	usleep(100);
-	// sem_post(philo->meal_local);
 }
-
 
 /*	routine sets philos to eat, sleep and think until the philo is dead
 	- even numbered philos sleep for 1000 microseconds (= 1 milisecond)
@@ -114,7 +91,10 @@ void	routine(t_meta *meta, int i)
 
 	philo = meta->philos[i];
 	if (pthread_create(&philo->check_end, NULL, &monitor, philo) != 0)
-		exit (-1); // update error 
+	{
+		sem_post_end(meta->num_philos, meta);
+		exit (1);
+	}
 	while (time_now_ms() <= philo->last_meal)
 	{
 		usleep(100);

@@ -6,55 +6,25 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 05:44:24 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/01 14:25:10 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/05 13:29:10 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-/*	quick_check_dead returns value of philo->end_cycle
-	(but does it locking and unlocking end_mutex) */
-// int	quick_check_dead(t_philo *philo)
-// {
-// 	sem_wait(philo->end_local);
-// 	if (1 == philo->end_cycle)
-// 	{
-// 		sem_post(philo->end_local);
-// 		return (1);
-// 	}
-// 	sem_post(philo->end_local);
-// 	return (0);
-// }
-
 /*	print_status prints the status of a given philo
 	returns 1 if death occurred */
 int	print_status(char *str, t_philo *philo, int death)
 {
-	// time_t time_now;
-
 	sem_wait(philo->print_global);
-	// if (quick_check_dead(philo) != 1)
-	// {
-	// 	time_now = time_now_ms();
-	// 	printf("%ld %d %s (timenow: %ld, start_time: %ld) \n", time_now - philo->meta->start_time, philo->id, str, time_now, philo->meta->start_time);
-		
-	// 	// printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, philo->id, str);
-	// 	if (death == 0)
-	// 		sem_post(philo->print_global);
-	// 	return (0);
-	// }
-
-	// time_now = time_now_ms();
-	// printf("%ld %d %s (timenow: %ld, start_time: %ld) \n", time_now - philo->meta->start_time, philo->id, str, time_now, philo->meta->start_time);
 	philo->last_status = time_now_ms();
-	printf("%ld %d %s\n", philo->last_status - philo->meta->start_time, philo->id, str);
-	// printf("%ld %d %s\n", time_now_ms() - philo->meta->start_time, philo->id, str);
+	printf("%ld %d %s\n", philo->last_status - \
+		philo->meta->start_time, philo->id, str);
 	if (death == 0)
 	{
 		sem_post(philo->print_global);
 		return (0);
 	}
-	// sem_post(philo->print_global);
 	return (1);
 }
 
@@ -69,8 +39,6 @@ int	usleep_check(t_philo *philo, time_t ms)
 	while (time_now_ms() - start < ms)
 	{
 		(void)philo;
-		// if (1 == quick_check_dead(philo))
-		// 	return (1);
 		usleep(100);
 	}
 	return (0);
@@ -83,4 +51,39 @@ time_t	time_now_ms(void)
 
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+/*	safe_free frees the pointer to allocated memory and
+	sets the pointer to null */
+void	safe_free(void *memory)
+{
+	free(memory);
+	memory = 0;
+}
+
+/*	sem_unlink_all removes all semaphores (incl global AND local)
+	(in case they already exist) 
+	- sem_unlink can return -1 and set errno if sempahore doesn't exist
+		so reset errno at end of function
+	*/
+void	sem_unlink_all(void)
+{
+	int		i;
+	char	*id_str;
+	char	*meal_local_name;
+
+	sem_unlink("/forks");
+	sem_unlink("/print");
+	sem_unlink("/end");
+	i = 0;
+	while (i < 200)
+	{
+		id_str = ft_itoa(i);
+		meal_local_name = ft_strjoin("/meal_", id_str);
+		sem_unlink(meal_local_name);
+		safe_free(id_str);
+		safe_free(meal_local_name);
+		i++;
+	}
+	errno = 0;
 }

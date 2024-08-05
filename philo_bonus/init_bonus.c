@@ -6,38 +6,11 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 10:17:16 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/29 12:28:17 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/05 13:28:59 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
-
-/*	sem_unlink_all removes all semaphores (incl global AND local)
-	(in case they already exist) 
-	- sem_unlink can return -1 and set errno if sempahore doesn't exist
-		so reset errno at end of function
-	*/
-void	sem_unlink_all(void)
-{
-	int	i;
-	char	*id_str;
-	char	*meal_local_name;
-
-	sem_unlink("/forks");
-	sem_unlink("/print");
-	sem_unlink("/end");
-	i = 0;
-	while (i < 200)
-	{
-		id_str = ft_itoa(i);
-		meal_local_name = ft_strjoin("/meal_", id_str);
-		sem_unlink(meal_local_name);
-		safe_free(id_str);
-		safe_free(meal_local_name);
-		i++;
-	}
-	errno = 0;
-}
 
 /*	init_sem opens all semaphores:
 	- semaphores: forks, print, end, last_meal, num_meals
@@ -81,7 +54,6 @@ t_philo	*init_philo(t_meta *meta, int i)
 	philo->meta = meta;
 	id_str = ft_itoa(i);
 	philo->meal_local_name = ft_strjoin("/meal_", id_str);
-	// philo->end_local_name = ft_strjoin("/end_", id_str);
 	safe_free(id_str);
 	if (!philo->meal_local_name)
 		return (free(philo), NULL);
@@ -120,7 +92,8 @@ int	init_philo_sem(t_meta *meta)
 	while (i < meta->num_philos)
 	{
 		sem_unlink(meta->philos[i]->meal_local_name);
-		meta->philos[i]->meal_local = sem_open(meta->philos[i]->meal_local_name, O_CREAT, 0644, 1);
+		meta->philos[i]->meal_local = \
+			sem_open(meta->philos[i]->meal_local_name, O_CREAT, 0644, 1);
 		if (meta->philos[i]->meal_local == SEM_FAILED)
 			return (destroy_local_sem(meta, i, ERR_SEM_OPEN), 1);
 		i++;

@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:37:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/31 14:01:51 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/05 13:08:56 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,15 @@
 /****************************************************************************/
 /* Error Messages 															*/
 /****************************************************************************/
+# define ERR_THREAD_CREATE "Error creating threads"
+
+
 # define ERR_ARGS "Wrong number of arguments"
 # define ERR_INVALID "Invalid input"
 # define ERR_MALLOC_META "Malloc error for meta"
 # define ERR_MALLOC_FORKS "Malloc error for forks"
 # define ERR_MALLOC_PHILOS "Malloc error for philos"
 # define ERR_MALLOC_PHILO_I "Malloc error for philo[i]"
-# define ERR_THREAD_CREATE "Error creating threads"
-# define ERR_THREAD_JOIN "Error joining threads"
 # define ERR_MUTEX_INIT "Error initialising mutex"
 
 /****************************************************************************/
@@ -128,7 +129,7 @@ void					*single_philo(t_philo *philo);
 
 /* Utility functions: utils.c */
 int						quick_check_dead(t_philo *philo);
-int						print_status(char *str, t_philo *philo, int death);
+int						print_status(char *str, t_philo *philo);
 int						usleep_check(t_philo *philo, time_t ms);
 time_t					time_now_ms(void);
 void					safe_free(void *memory);

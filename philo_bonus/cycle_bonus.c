@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 06:14:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/01 15:26:43 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/05 13:25:37 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 */
 int	start(t_meta *meta)
 {
-	int	i;
+	int		i;
 	pid_t	pid;
 
 	meta->start_time = time_now_ms() + (meta->num_philos * 20);
@@ -34,7 +34,7 @@ int	start(t_meta *meta)
 	{
 		pid = fork();
 		if (pid == -1)
-			return (1); // add error function: kill philos up until i and then destroy local sem
+			return (destroy_philo_process(meta, i, ERR_FORK), 1);
 		else if (pid == 0)
 			routine(meta, i);
 		else
@@ -44,12 +44,13 @@ int	start(t_meta *meta)
 	return (0);
 }
 
-int	kill_philos(t_meta *meta)
+/*	kill_philos sends SIGKILL to philos from 0 to n - 1 */
+int	kill_philos(t_meta *meta, int n)
 {
 	int	i;
 
 	i = 0;
-	while (i < meta->num_philos)
+	while (i < n)
 	{
 		kill(meta->philo_pids[i], SIGKILL);
 		i++;
@@ -70,7 +71,7 @@ int	stop(t_meta *meta)
 		sem_wait(meta->end_global);
 		i++;
 	}
-	kill_philos(meta);
+	kill_philos(meta, meta->num_philos);
 	destroy_local_sem(meta, meta->num_philos, NULL);
 	return (0);
 }
