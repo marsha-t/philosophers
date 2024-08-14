@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 06:37:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/05 13:08:56 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/14 10:04:33 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@
 /* Error Messages 															*/
 /****************************************************************************/
 # define ERR_THREAD_CREATE "Error creating threads"
-
-
 # define ERR_ARGS "Wrong number of arguments"
 # define ERR_INVALID "Invalid input"
 # define ERR_MALLOC_META "Malloc error for meta"

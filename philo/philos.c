@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 06:28:41 by mateo             #+#    #+#             */
-/*   Updated: 2024/08/05 12:53:57 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/14 10:07:29 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,8 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	while (time_now_ms() <= philo->last_meal)
+		usleep(100);
 	if (1 == philo->meta->num_philos)
 		return (single_philo(philo));
 	else if (0 == philo->id % 2)

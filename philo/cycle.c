@@ -6,7 +6,7 @@
 /*   By: mateo <mateo@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 06:14:31 by mateo             #+#    #+#             */
-/*   Updated: 2024/07/31 14:06:00 by mateo            ###   ########.fr       */
+/*   Updated: 2024/08/14 10:07:57 by mateo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	start(t_meta *meta)
 {
 	int	i;
 
-	meta->start_time = time_now_ms();
+	meta->start_time = time_now_ms() + (meta->num_philos * 20);
 	i = 0;
 	while (i < meta->num_philos)
 	{
